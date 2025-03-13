@@ -44,6 +44,8 @@ from .models.interface import Model, ModelProvider, ModelTracing
 from .models.openai_chatcompletions import OpenAIChatCompletionsModel
 from .models.openai_provider import OpenAIProvider
 from .models.openai_responses import OpenAIResponsesModel
+from .models.gemini_chatcompletions import GeminiChatCompletionsModel
+from .models.gemini_provider import GeminiProvider
 from .result import RunResult, RunResultStreaming
 from .run import RunConfig, Runner
 from .run_context import RunContextWrapper, TContext
@@ -105,6 +107,11 @@ def set_default_openai_key(key: str, use_for_tracing: bool = True) -> None:
             set_tracing_export_api_key() with the API key you want to use for tracing.
     """
     _config.set_default_openai_key(key, use_for_tracing)
+    try:
+        _config.set_default_openai_key(key)
+    except Exception as e:
+        logging.error(f"Error setting default OpenAI key: {e}")
+        raise
 
 
 def set_default_openai_client(client: AsyncOpenAI, use_for_tracing: bool = True) -> None:
@@ -117,21 +124,37 @@ def set_default_openai_client(client: AsyncOpenAI, use_for_tracing: bool = True)
             you'll either need to set the OPENAI_API_KEY environment variable or call
             set_tracing_export_api_key() with the API key you want to use for tracing.
     """
-    _config.set_default_openai_client(client, use_for_tracing)
+    try:
+        _config.set_default_openai_client(client, use_for_tracing)
+    except Exception as e:
+        logging.error(f"Error setting default OpenAI client: {e}")
+        raise
 
 
 def set_default_openai_api(api: Literal["chat_completions", "responses"]) -> None:
     """Set the default API to use for OpenAI LLM requests. By default, we will use the responses API
     but you can set this to use the chat completions API instead.
     """
-    _config.set_default_openai_api(api)
+    try:
+        _config.set_default_openai_api(api)
+    except Exception as e:
+        logging.error(f"Error setting default OpenAI API: {e}")
+        raise
 
 
-def enable_verbose_stdout_logging():
+def enable_verbose_stdout_logging() -> None:
     """Enables verbose logging to stdout. This is useful for debugging."""
     logger = logging.getLogger("openai.agents")
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler(sys.stdout))
+    try:
+        for name in ["openai.agents", "openai.agents.tracing"]:
+            logger = logging.getLogger(name)
+            logger.setLevel(logging.DEBUG)
+            logger.addHandler(logging.StreamHandler(sys.stdout))
+    except Exception as e:
+        logging.error(f"Error enabling verbose stdout logging: {e}")
+        raise
 
 
 __all__ = [
@@ -144,6 +167,8 @@ __all__ = [
     "OpenAIChatCompletionsModel",
     "OpenAIProvider",
     "OpenAIResponsesModel",
+    "GeminiChatCompletionsModel",
+    "GeminiProvider",
     "AgentOutputSchema",
     "Computer",
     "AsyncComputer",
