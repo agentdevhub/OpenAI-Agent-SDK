@@ -3,6 +3,7 @@ from typing import Any, Generic
 from .agent import Agent
 from .run_context import RunContextWrapper, TContext
 from .tool import Tool
+from .items import ToolCallItem
 
 
 class RunHooks(Generic[TContext]):
@@ -39,7 +40,7 @@ class RunHooks(Generic[TContext]):
         context: RunContextWrapper[TContext],
         agent: Agent[TContext],
         tool: Tool,
-        args: str,
+        tool_call: ToolCallItem,
     ) -> None:
         """Called before a tool is invoked."""
         pass
@@ -93,7 +94,7 @@ class AgentHooks(Generic[TContext]):
         context: RunContextWrapper[TContext],
         agent: Agent[TContext],
         tool: Tool,
-        args: str,
+        tool_call: ToolCallItem,
     ) -> None:
         """Called before a tool is invoked."""
         pass
