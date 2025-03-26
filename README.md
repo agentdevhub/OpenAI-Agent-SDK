@@ -1,21 +1,152 @@
-# OpenAI Agents SDK
+# OpenAPI Agents SDK
 
-The OpenAI Agents SDK is a lightweight yet powerful framework for building multi-agent workflows.
+OpenAI's Agents SDK is really cool, but it only supports OpenAI's own API. Let's fix that! This project aims to extend the original framework to support multiple API providers, truly making it an "Open" AI Agents platform.
 
-<img src="https://cdn.openai.com/API/docs/images/orchestration.png" alt="Image of the Agents Tracing UI" style="max-height: 803px;">
+> This project builds upon and extends the [original OpenAI Agents SDK](https://github.com/openai/openai-agents-python/blob/main/README.md).
 
-### Core concepts:
+
+## Project Vision
+
+The OpenAPI Agents SDK is a powerful framework designed to achieve an ambitious goal: **enabling any API that conforms to the OpenAPI specification to be utilized by intelligent agents**. Through this framework, we can:
+
+- **Unified Integration**: Bring diverse APIs into the Agent framework
+- **Intelligent Interaction**: Enable AI models to understand API capabilities and limitations, automatically calling appropriate endpoints
+- **Multi-Model Support**: Support OpenAI, local models, and third-party AI services
+- **Process Orchestration**: Solve complex problems through multi-Agent collaboration
+
+Our extensions make this framework no longer limited to OpenAI's cloud-based models, but support various local and third-party models, providing broader possibilities for API integration.
+
+## Current Progress
+
+We have tested integration with multiple API providers:
+
+**Azure OpenAI API** integration has been implemented perfectly. Most examples run successfully with the Azure API.
+Only the Responses API examples fail, as Azure API doesn't currently support the responses API.
+
+We've also implemented integration with **Ollama**, with some basic examples running successfully using the Ollama API. However, some examples (like handoffs) fail when using the Ollama API.
+Other advanced examples are too challenging for the Ollama API to pass.
+
+### Examples passed with Ollama
+examples_OpenAPI/ollama/basic/hello_world.py
+examples_OpenAPI/ollama/basic/hello_world_jupyter.py
+examples_OpenAPI/ollama/basic/hello_world.py
+examples_OpenAPI/ollama/basic/failed/agent_lifecycle_example.py
+### Examples failed with Ollama
+examples_OpenAPI/ollama/basic/failed/lifecycle_example.py
+
+## Core Concepts
 
 1. [**Agents**](https://openai.github.io/openai-agents-python/agents): LLMs configured with instructions, tools, guardrails, and handoffs
 2. [**Handoffs**](https://openai.github.io/openai-agents-python/handoffs/): A specialized tool call used by the Agents SDK for transferring control between agents
 3. [**Guardrails**](https://openai.github.io/openai-agents-python/guardrails/): Configurable safety checks for input and output validation
 4. [**Tracing**](https://openai.github.io/openai-agents-python/tracing/): Built-in tracking of agent runs, allowing you to view, debug and optimize your workflows
+5. [**Model Providers**](https://openai.github.io/openai-agents-python/ollama_integration): Support for multiple model providers including OpenAI and Ollama
+## Using Azure OpenAI Service
 
-Explore the [examples](examples) directory to see the SDK in action, and read our [documentation](https://openai.github.io/openai-agents-python/) for more details.
+Azure OpenAI provides enterprise-grade security and compliance features. Integrating with Azure is simple:
 
-Notably, our SDK [is compatible](https://openai.github.io/openai-agents-python/models/) with any model providers that support the OpenAI Chat Completions API format.
+```python
+import asyncio
+import sys, os
 
-## Get started
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
+from src.agents import Agent, Runner
+from src.agents.model_settings import ModelSettings
+from src.agents.run import RunConfig
+from src.agents.models.provider_factory import ModelProviderFactory
+
+async def main():
+    # Create Azure OpenAI settings
+    azure_settings = ModelSettings(
+        provider="azure_openai",
+        azure_endpoint="https://your-resource-name.openai.azure.com",
+        azure_api_key="your-azure-api-key",
+        azure_api_version="2024-02-15-preview",
+        azure_deployment="your-deployment-name"
+    )
+    
+    # Create run configuration
+    run_config = RunConfig()
+    run_config.model_provider = ModelProviderFactory.create_provider(azure_settings)
+
+    # Create Agent instance
+    agent = Agent(
+        name="AzureAssistant",
+        instructions="You are a helpful assistant running on Azure.",
+        model_settings=azure_settings
+    )
+    
+    # Run Agent
+    result = await Runner.run(
+        agent, 
+        "Explain the advantages of using Azure OpenAI.", 
+        run_config=run_config
+    )
+    
+    # Print results
+    print(result.final_output)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+For more details, please refer to our [Azure Integration Documentation](docs/azure_integration.md).
+
+## Using Local Ollama Models
+
+This is our key extension. Using local Ollama models is straightforward:
+
+```python
+import asyncio
+import sys, os
+
+# Add project root to Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
+from src.agents import Agent, Runner
+from src.agents.model_settings import ModelSettings
+from src.agents.run import RunConfig
+from src.agents.models.provider_factory import ModelProviderFactory
+
+async def main():
+    # Create Ollama model settings
+    ollama_settings = ModelSettings(
+        provider="ollama",  # Specify Ollama as the provider
+        ollama_base_url="http://localhost:11434",  # Ollama service address
+        ollama_default_model="llama3.2",  # Use llama3.2 model
+        temperature=0.7  # Optional: control creativity
+    )
+    
+    # Create run configuration
+    run_config = RunConfig()
+    run_config.model_provider = ModelProviderFactory.create_provider(ollama_settings)
+
+    # Create Agent instance
+    agent = Agent(
+        name="Assistant",
+        instructions="You are a helpful assistant.",
+        model_settings=ollama_settings  # Use Ollama settings
+    )
+    
+    # Run Agent
+    result = await Runner.run(
+        agent, 
+        "Write a Python function to calculate the Fibonacci sequence.", 
+        run_config=run_config
+    )
+    
+    # Print results
+    print(result.final_output)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+For more details, please refer to our [Ollama Integration Documentation](docs/ollama_integration.md).
+
+
+## Getting Started
 
 1. Set up your Python environment
 
@@ -24,157 +155,112 @@ python -m venv env
 source env/bin/activate
 ```
 
-2. Install Agents SDK
+2. Install the Agents SDK
 
 ```
-pip install openai-agents
+pip install -e .
 ```
 
-For voice support, install with the optional `voice` group: `pip install 'openai-agents[voice]'`.
+For Ollama support, ensure you have Ollama installed and running:
+1. Download and install Ollama from [ollama.ai](https://ollama.ai)
+2. Run `ollama serve` to start the service
+3. Pull the required model, e.g., `ollama pull llama3.2`
 
-## Hello world example
+## Project Structure
 
-```python
-from agents import Agent, Runner
+- **`src/`**: Core source code
+  - **`agents/`**: Main implementation of the Agent framework
+  - **`agents/models/`**: Implementations of different model providers
+- **`examples_OpenAPI/`**: OpenAPI integration examples
+  - **`ollama/`**: Ollama integration examples
+  - **`azure/`**: Azure OpenAI integration examples
+- **`docs/`**: Project documentation
+  - **`ollama_integration.md`**: Detailed documentation on Ollama integration
+  - **`azure_integration.md`**: Detailed documentation on Azure integration
+  - **`ollama_API/`**: Ollama API reference
 
-agent = Agent(name="Assistant", instructions="You are a helpful assistant")
+## Future Plans
 
-result = Runner.run_sync(agent, "Write a haiku about recursion in programming.")
-print(result.final_output)
+We plan to continue expanding this framework to support more APIs and model providers:
 
-# Code within the code,
-# Functions calling themselves,
-# Infinite loop's dance.
-```
+- **Next immediate steps**:
+  - **Azure AI Integration**: Add support for Azure OpenAI Service to enable enterprise-grade AI capabilities with Azure's security and compliance features
+  - **AWS Bedrock Integration**: Implement integration with AWS Bedrock to support models like Claude, Titan, and others in the AWS ecosystem
 
-(_If running this, ensure you set the `OPENAI_API_KEY` environment variable_)
+- Additional roadmap items:
+  - Add automatic integration for more OpenAPI specification APIs
+  - Implement streaming response support
+  - Improve tool call compatibility across different models
+  - Add more model providers (e.g., Anthropic, Gemini, etc.)
 
-(_For Jupyter notebook users, see [hello_world_jupyter.py](examples/basic/hello_world_jupyter.py)_)
+## Contribution Guidelines
 
-## Handoffs example
+We welcome and encourage community contributions to help make OpenAI Agent truly "Open"! Here's how you can participate:
 
-```python
-from agents import Agent, Runner
-import asyncio
+### How to Contribute
 
-spanish_agent = Agent(
-    name="Spanish agent",
-    instructions="You only speak Spanish.",
-)
+1. **Fork and Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/openAPI-agents-python.git
+   cd openAPI-agents-python
+   ```
 
-english_agent = Agent(
-    name="English agent",
-    instructions="You only speak English",
-)
+2. **Create a New Branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-triage_agent = Agent(
-    name="Triage agent",
-    instructions="Handoff to the appropriate agent based on the language of the request.",
-    handoffs=[spanish_agent, english_agent],
-)
+3. **Implement Your Changes**
+   - Add support for new API providers
+   - Fix issues in existing integrations
+   - Improve documentation
+   - Add more examples
 
+4. **Test Your Changes**
+   - Ensure existing tests pass
+   - Add tests for new features
 
-async def main():
-    result = await Runner.run(triage_agent, input="Hola, ¿cómo estás?")
-    print(result.final_output)
-    # ¡Hola! Estoy bien, gracias por preguntar. ¿Y tú, cómo estás?
+5. **Commit and Push Your Changes**
+   ```bash
+   git commit -m "Add support for XYZ API provider"
+   git push origin feature/your-feature-name
+   ```
 
+6. **Create a Pull Request**
+   - Provide a clear PR description
+   - Explain what problem your changes solve
 
-if __name__ == "__main__":
-    asyncio.run(main())
-```
+### Contribution Areas
 
-## Functions example
+You can contribute in the following areas:
 
-```python
-import asyncio
+1. **New API Provider Support**
+   - Add support for Anthropic, Gemini, Cohere, etc.
+   - Implement cloud service provider integrations like AWS Bedrock, Google Vertex AI
 
-from agents import Agent, Runner, function_tool
+2. **Existing Integration Improvements**
+   - Improve Ollama integration compatibility
+   - Optimize Azure OpenAI integration performance
 
+3. **Documentation Enhancement**
+   - Write more detailed API integration guides
+   - Create more examples and tutorials
+   - Translate documentation
 
-@function_tool
-def get_weather(city: str) -> str:
-    return f"The weather in {city} is sunny."
+4. **Bug Fixes and Feature Requests**
+   - Report issues or suggest new features
+   - Fix existing issues
 
-
-agent = Agent(
-    name="Hello world",
-    instructions="You are a helpful agent.",
-    tools=[get_weather],
-)
-
-
-async def main():
-    result = await Runner.run(agent, input="What's the weather in Tokyo?")
-    print(result.final_output)
-    # The weather in Tokyo is sunny.
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-## The agent loop
-
-When you call `Runner.run()`, we run a loop until we get a final output.
-
-1. We call the LLM, using the model and settings on the agent, and the message history.
-2. The LLM returns a response, which may include tool calls.
-3. If the response has a final output (see below for more on this), we return it and end the loop.
-4. If the response has a handoff, we set the agent to the new agent and go back to step 1.
-5. We process the tool calls (if any) and append the tool responses messages. Then we go to step 1.
-
-There is a `max_turns` parameter that you can use to limit the number of times the loop executes.
-
-### Final output
-
-Final output is the last thing the agent produces in the loop.
-
-1.  If you set an `output_type` on the agent, the final output is when the LLM returns something of that type. We use [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) for this.
-2.  If there's no `output_type` (i.e. plain text responses), then the first LLM response without any tool calls or handoffs is considered as the final output.
-
-As a result, the mental model for the agent loop is:
-
-1. If the current agent has an `output_type`, the loop runs until the agent produces structured output matching that type.
-2. If the current agent does not have an `output_type`, the loop runs until the current agent produces a message without any tool calls/handoffs.
-
-## Common agent patterns
-
-The Agents SDK is designed to be highly flexible, allowing you to model a wide range of LLM workflows including deterministic flows, iterative loops, and more. See examples in [`examples/agent_patterns`](examples/agent_patterns).
-
-## Tracing
-
-The Agents SDK automatically traces your agent runs, making it easy to track and debug the behavior of your agents. Tracing is extensible by design, supporting custom spans and a wide variety of external destinations, including [Logfire](https://logfire.pydantic.dev/docs/integrations/llms/openai/#openai-agents), [AgentOps](https://docs.agentops.ai/v1/integrations/agentssdk), [Braintrust](https://braintrust.dev/docs/guides/traces/integrations#openai-agents-sdk), [Scorecard](https://docs.scorecard.io/docs/documentation/features/tracing#openai-agents-sdk-integration), and [Keywords AI](https://docs.keywordsai.co/integration/development-frameworks/openai-agent). For more details about how to customize or disable tracing, see [Tracing](http://openai.github.io/openai-agents-python/tracing), which also includes a larger list of [external tracing processors](http://openai.github.io/openai-agents-python/tracing/#external-tracing-processors-list).
-
-## Development (only needed if you need to edit the SDK/examples)
-
-0. Ensure you have [`uv`](https://docs.astral.sh/uv/) installed.
-
-```bash
-uv --version
-```
-
-1. Install dependencies
-
-```bash
-make sync
-```
-
-2. (After making changes) lint/test
-
-```
-make tests  # run tests
-make mypy   # run typechecker
-make lint   # run linter
-```
+We believe that through community effort, we can build a truly open Agent framework that allows any API to leverage the intelligent capabilities of Agent technology.
 
 ## Acknowledgements
 
-We'd like to acknowledge the excellent work of the open-source community, especially:
+We would like to thank the open-source community for their outstanding work, especially:
 
--   [Pydantic](https://docs.pydantic.dev/latest/) (data validation) and [PydanticAI](https://ai.pydantic.dev/) (advanced agent framework)
--   [MkDocs](https://github.com/squidfunk/mkdocs-material)
--   [Griffe](https://github.com/mkdocstrings/griffe)
--   [uv](https://github.com/astral-sh/uv) and [ruff](https://github.com/astral-sh/ruff)
+- [OpenAI](https://openai.com/) (original Agents SDK)
+- [Ollama](https://ollama.ai/) (local LLM runtime framework)
+- [Pydantic](https://docs.pydantic.dev/latest/) (data validation) and [PydanticAI](https://ai.pydantic.dev/) (advanced agent framework)
+- [MkDocs](https://github.com/squidfunk/mkdocs-material)
+- [Griffe](https://github.com/mkdocstrings/griffe)
 
-We're committed to continuing to build the Agents SDK as an open source framework so others in the community can expand on our approach.
+Join us in making OpenAI Agent more "Open"!
