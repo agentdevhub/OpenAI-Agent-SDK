@@ -30,6 +30,8 @@ source env/bin/activate
 pip install openai-agents
 ```
 
+For voice support, install with the optional `voice` group: `pip install 'openai-agents[voice]'`.
+
 ## Hello world example
 
 ```python
