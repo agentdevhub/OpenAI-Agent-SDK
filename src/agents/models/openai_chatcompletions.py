@@ -208,10 +208,8 @@ class OpenAIChatCompletionsModel(Model):
                     continue
 
                 delta = chunk.choices[0].delta
-                if delta.reasoning_content:
-                    content = delta.reasoning_content
-                else:
-                    content = delta.content
+                reasoning_content = getattr(delta, "reasoning_content")
+                content = reasoning_content if reasoning_content else delta.content
 
                 # Handle text
                 if content:
