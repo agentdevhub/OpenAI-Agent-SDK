@@ -1,4 +1,4 @@
-site_name: OpenAI Agents SDK
+site_name: AgentDevHub—OpenAI Agents SDK 中文文档
 theme:
   name: material
   features:
@@ -43,15 +43,15 @@ plugins:
   - i18n:
       docs_structure: folder
       languages:
-        - locale: en
+        - locale: zh_CN
           default: true
-          name: English
+          name: 简体中文
           build: true
           nav:
-            - Intro: index.md
-            - Quickstart: quickstart.md
-            - Examples: examples.md
-            - Documentation:
+            - 介绍: index.md
+            - 快速开始: quickstart.md
+            - 案例: examples.md
+            - 文档:
                 - agents.md
                 - running_agents.md
                 - results.md
@@ -66,11 +66,11 @@ plugins:
                 - models.md
                 - config.md
                 - visualization.md
-                - Voice agents:
+                - 语音 Agent:
                     - voice/quickstart.md
                     - voice/pipeline.md
                     - voice/tracing.md
-            - API Reference:
+            - API 索引:
                 - Agents:
                     - ref/index.md
                     - ref/agent.md
@@ -120,45 +120,6 @@ plugins:
                 - Extensions:
                     - ref/extensions/handoff_filters.md
                     - ref/extensions/handoff_prompt.md
-
-        - locale: ja
-          name: 日本語
-          build: true
-          nav:
-            - はじめに: index.md
-            - クイックスタート: quickstart.md
-            - サンプル例: examples.md
-            - ドキュメント:
-                - agents.md
-                - running_agents.md
-                - results.md
-                - streaming.md
-                - tools.md
-                - mcp.md
-                - handoffs.md
-                - tracing.md
-                - context.md
-                - guardrails.md
-                - multi_agent.md
-                - models.md
-                - config.md
-                - visualization.md
-                - 音声エージェント:
-                    - voice/quickstart.md
-                    - voice/pipeline.md
-                    - voice/tracing.md
-
-extra:
-  # Remove material generation message in footer
-  generator: false
-  language: en
-  alternate:
-    - name: English
-      link: /openai-agents-python/
-      lang: en
-    - name: 日本語
-      link: /openai-agents-python/ja/
-      lang: ja
 
 markdown_extensions:
   - pymdownx.superfences:
