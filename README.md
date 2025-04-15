@@ -1,57 +1,57 @@
 # OpenAI Agents SDK
 
-The OpenAI Agents SDK is a lightweight yet powerful framework for building multi-agent workflows.
+OpenAI Agents SDK 是一个轻量级但功能强大的多智能体工作流构建框架。
 
-<img src="https://cdn.openai.com/API/docs/images/orchestration.png" alt="Image of the Agents Tracing UI" style="max-height: 803px;">
+<img src="https://cdn.openai.com/API/docs/images/orchestration.png" alt="Agents 跟踪界面示意图" style="max-height: 803px;">
 
-### Core concepts:
+### 核心概念：
 
-1. [**Agents**](https://openai.github.io/openai-agents-python/agents): LLMs configured with instructions, tools, guardrails, and handoffs
-2. [**Handoffs**](https://openai.github.io/openai-agents-python/handoffs/): A specialized tool call used by the Agents SDK for transferring control between agents
-3. [**Guardrails**](https://openai.github.io/openai-agents-python/guardrails/): Configurable safety checks for input and output validation
-4. [**Tracing**](https://openai.github.io/openai-agents-python/tracing/): Built-in tracking of agent runs, allowing you to view, debug and optimize your workflows
+1. [**Agents（智能体）**](https://openai-agent-sdk.agentdevhub.com/agents)：配置了指令、工具、护栏和交接功能的LLM
+2. [**Handoffs（交接）**](https://openai-agent-sdk.agentdevhub.com/handoffs/)：Agents SDK 用于在智能体间转移控制权的专用工具调用
+3. [**Guardrails（护栏）**](https://openai-agent-sdk.agentdevhub.com/guardrails/)：可配置的输入输出安全验证机制
+4. [**Tracing（跟踪）**](https://openai-agent-sdk.agentdevhub.com/tracing/)：内置的智能体运行追踪功能，支持可视化、调试和优化工作流
 
-Explore the [examples](examples) directory to see the SDK in action, and read our [documentation](https://openai.github.io/openai-agents-python/) for more details.
+浏览[示例](examples)目录查看实际应用案例，详细文档请访问[官方文档](https://openai-agent-sdk.agentdevhub.com/)。
 
-Notably, our SDK [is compatible](https://openai.github.io/openai-agents-python/models/) with any model providers that support the OpenAI Chat Completions API format.
+值得注意的是，本SDK[兼容](https://openai-agent-sdk.agentdevhub.com/models/)所有支持OpenAI聊天补全API格式的模型供应商。
 
-## Get started
+## 快速上手
 
-1. Set up your Python environment
+1. 配置Python环境
 
-```
+```bash
 python -m venv env
 source env/bin/activate
 ```
 
-2. Install Agents SDK
+2. 安装Agents SDK
 
-```
+```bash
 pip install openai-agents
 ```
 
-For voice support, install with the optional `voice` group: `pip install 'openai-agents[voice]'`.
+如需语音支持，可使用可选`voice`组安装：`pip install 'openai-agents[voice]'`。
 
-## Hello world example
+## Hello world 示例
 
 ```python
 from agents import Agent, Runner
 
-agent = Agent(name="Assistant", instructions="You are a helpful assistant")
+agent = Agent(name="Assistant", instructions="你是一个乐于助人的助手")
 
-result = Runner.run_sync(agent, "Write a haiku about recursion in programming.")
+result = Runner.run_sync(agent, "写一首关于编程递归的俳句。")
 print(result.final_output)
 
-# Code within the code,
-# Functions calling themselves,
-# Infinite loop's dance.
+# 代码嵌套代码，
+# 函数自我调用循环，
+# 无限舞步翩跹。
 ```
 
-(_If running this, ensure you set the `OPENAI_API_KEY` environment variable_)
+（运行前请确保已设置`OPENAI_API_KEY`环境变量）
 
-(_For Jupyter notebook users, see [hello_world_jupyter.py](examples/basic/hello_world_jupyter.py)_)
+（Jupyter笔记本用户请参考[hello_world_jupyter.py](examples/basic/hello_world_jupyter.py)）
 
-## Handoffs example
+## 交接示例
 
 ```python
 from agents import Agent, Runner
@@ -59,17 +59,17 @@ import asyncio
 
 spanish_agent = Agent(
     name="Spanish agent",
-    instructions="You only speak Spanish.",
+    instructions="你只能说西班牙语。",
 )
 
 english_agent = Agent(
     name="English agent",
-    instructions="You only speak English",
+    instructions="你只能说英语",
 )
 
 triage_agent = Agent(
     name="Triage agent",
-    instructions="Handoff to the appropriate agent based on the language of the request.",
+    instructions="根据请求语言交接给对应智能体",
     handoffs=[spanish_agent, english_agent],
 )
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## Functions example
+## 工具函数示例
 
 ```python
 import asyncio
@@ -94,87 +94,87 @@ from agents import Agent, Runner, function_tool
 
 @function_tool
 def get_weather(city: str) -> str:
-    return f"The weather in {city} is sunny."
+    return f"{city}的天气晴朗"
 
 
 agent = Agent(
     name="Hello world",
-    instructions="You are a helpful agent.",
+    instructions="你是一个乐于助人的智能体",
     tools=[get_weather],
 )
 
 
 async def main():
-    result = await Runner.run(agent, input="What's the weather in Tokyo?")
+    result = await Runner.run(agent, input="东京的天气如何？")
     print(result.final_output)
-    # The weather in Tokyo is sunny.
+    # 东京的天气晴朗
 
 
 if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## The agent loop
+## 智能体循环机制
 
-When you call `Runner.run()`, we run a loop until we get a final output.
+调用`Runner.run()`时，系统会持续循环直至获得最终输出：
 
-1. We call the LLM, using the model and settings on the agent, and the message history.
-2. The LLM returns a response, which may include tool calls.
-3. If the response has a final output (see below for more on this), we return it and end the loop.
-4. If the response has a handoff, we set the agent to the new agent and go back to step 1.
-5. We process the tool calls (if any) and append the tool responses messages. Then we go to step 1.
+1. 调用LLM，使用智能体配置的模型参数和消息历史
+2. LLM返回响应，可能包含工具调用
+3. 若响应包含最终输出（见下文说明），终止循环并返回结果
+4. 若响应包含交接指令，切换当前智能体后回到步骤1
+5. 处理工具调用（如有）并追加工具响应消息，然后回到步骤1
 
-There is a `max_turns` parameter that you can use to limit the number of times the loop executes.
+可通过`max_turns`参数限制循环次数。
 
-### Final output
+### 最终输出判定
 
-Final output is the last thing the agent produces in the loop.
+最终输出是智能体在循环结束时产生的最终结果：
 
-1.  If you set an `output_type` on the agent, the final output is when the LLM returns something of that type. We use [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) for this.
-2.  If there's no `output_type` (i.e. plain text responses), then the first LLM response without any tool calls or handoffs is considered as the final output.
+1. 若智能体设置了`output_type`，当LLM返回符合该类型的结构化输出时终止。我们使用[结构化输出](https://platform.openai.com/docs/guides/structured-outputs)实现此功能
+2. 若未设置`output_type`（即纯文本响应），则首个不含工具调用/交接指令的LLM响应将作为最终输出
 
-As a result, the mental model for the agent loop is:
+因此，智能体循环的思维模型为：
 
-1. If the current agent has an `output_type`, the loop runs until the agent produces structured output matching that type.
-2. If the current agent does not have an `output_type`, the loop runs until the current agent produces a message without any tool calls/handoffs.
+1. 若当前智能体有`output_type`，循环持续到生成匹配该类型的结构化输出
+2. 若当前智能体无`output_type`，循环持续到生成不含工具调用/交接的纯文本响应
 
-## Common agent patterns
+## 常见智能体模式
 
-The Agents SDK is designed to be highly flexible, allowing you to model a wide range of LLM workflows including deterministic flows, iterative loops, and more. See examples in [`examples/agent_patterns`](examples/agent_patterns).
+Agents SDK设计高度灵活，可建模各类LLM工作流，包括确定性流程、迭代循环等。更多示例参见[`examples/agent_patterns`](examples/agent_patterns)。
 
-## Tracing
+## 跟踪功能
 
-The Agents SDK automatically traces your agent runs, making it easy to track and debug the behavior of your agents. Tracing is extensible by design, supporting custom spans and a wide variety of external destinations, including [Logfire](https://logfire.pydantic.dev/docs/integrations/llms/openai/#openai-agents), [AgentOps](https://docs.agentops.ai/v1/integrations/agentssdk), [Braintrust](https://braintrust.dev/docs/guides/traces/integrations#openai-agents-sdk), [Scorecard](https://docs.scorecard.io/docs/documentation/features/tracing#openai-agents-sdk-integration), and [Keywords AI](https://docs.keywordsai.co/integration/development-frameworks/openai-agent). For more details about how to customize or disable tracing, see [Tracing](http://openai.github.io/openai-agents-python/tracing), which also includes a larger list of [external tracing processors](http://openai.github.io/openai-agents-python/tracing/#external-tracing-processors-list).
+Agents SDK自动追踪智能体运行过程，便于跟踪和调试。跟踪功能可扩展设计，支持自定义span和多种外部目标平台，包括[Logfire](https://logfire.pydantic.dev/docs/integrations/llms/openai/#openai-agents)、[AgentOps](https://docs.agentops.ai/v1/integrations/agentssdk)、[Braintrust](https://braintrust.dev/docs/guides/traces/integrations#openai-agents-sdk)、[Scorecard](https://docs.scorecard.io/docs/documentation/features/tracing#openai-agents-sdk-integration)和[Keywords AI](https://docs.keywordsai.co/integration/development-frameworks/openai-agent)。关于自定义或禁用跟踪的详细说明，参见[跟踪文档](http://openai-agent-sdk.agentdevhub.com/tracing)，其中还包含[外部跟踪处理器列表](http://openai-agent-sdk.agentdevhub.com/tracing/#external-tracing-processors-list)。
 
-## Development (only needed if you need to edit the SDK/examples)
+## 开发指南（仅在需要修改SDK/示例时适用）
 
-0. Ensure you have [`uv`](https://docs.astral.sh/uv/) installed.
+0. 确保已安装[`uv`](https://docs.astral.sh/uv/)
 
 ```bash
 uv --version
 ```
 
-1. Install dependencies
+1. 安装依赖
 
 ```bash
 make sync
 ```
 
-2. (After making changes) lint/test
+2. （修改后）执行测试
 
+```bash
+make tests  # 运行测试
+make mypy   # 类型检查
+make lint   # 代码规范检查
 ```
-make tests  # run tests
-make mypy   # run typechecker
-make lint   # run linter
-```
 
-## Acknowledgements
+## 致谢
 
-We'd like to acknowledge the excellent work of the open-source community, especially:
+感谢开源社区的卓越贡献，特别致谢：
 
--   [Pydantic](https://docs.pydantic.dev/latest/) (data validation) and [PydanticAI](https://ai.pydantic.dev/) (advanced agent framework)
--   [MkDocs](https://github.com/squidfunk/mkdocs-material)
--   [Griffe](https://github.com/mkdocstrings/griffe)
--   [uv](https://github.com/astral-sh/uv) and [ruff](https://github.com/astral-sh/ruff)
+- [Pydantic](https://docs.pydantic.dev/latest/)（数据验证）和[PydanticAI](https://ai.pydantic.dev/)（高级智能体框架）
+- [MkDocs](https://github.com/squidfunk/mkdocs-material)
+- [Griffe](https://github.com/mkdocstrings/griffe)
+- [uv](https://github.com/astral-sh/uv) 和 [ruff](https://github.com/astral-sh/ruff)
 
-We're committed to continuing to build the Agents SDK as an open source framework so others in the community can expand on our approach.
+我们致力于将Agents SDK作为开源框架持续开发，推动社区扩展和创新。
