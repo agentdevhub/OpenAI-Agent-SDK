@@ -1,24 +1,24 @@
-# Tests
+# 测试
 
-Before running any tests, make sure you have `uv` installed (and ideally run `make sync` after).
+在运行任何测试之前，请确保已安装 `uv`（建议随后运行 `make sync`）。
 
-## Running tests
+## 运行测试
 
 ```
 make tests
 ```
 
-## Snapshots
+## 快照测试
 
-We use [inline-snapshots](https://15r10nk.github.io/inline-snapshot/latest/) for some tests. If your code adds new snapshot tests or breaks existing ones, you can fix/create them. After fixing/creating snapshots, run `make tests` again to verify the tests pass.
+我们使用 [inline-snapshots](https://15r10nk.github.io/inline-snapshot/latest/) 进行部分测试。若您的代码新增了快照测试或导致现有测试失败，可执行以下操作修复/创建快照。完成快照修复/创建后，请重新运行 `make tests` 以验证测试是否通过。
 
-### Fixing snapshots
+### 修复快照
 
 ```
 make snapshots-fix
 ```
 
-### Creating snapshots
+### 创建快照
 
 ```
 make snapshots-update

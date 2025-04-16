@@ -1,13 +1,13 @@
-# MCP SSE Example
+# MCP SSE 示例
 
-This example uses a local SSE server in [server.py](server.py).
+本示例在 [server.py](server.py) 中使用了一个本地 SSE 服务器。
 
-Run the example via:
+通过以下命令运行示例：
 
 ```
 uv run python examples/mcp/sse_example/main.py
 ```
 
-## Details
+## 实现细节
 
-The example uses the `MCPServerSse` class from `agents.mcp`. The server runs in a sub-process at `https://localhost:8000/sse`.
+该示例使用了来自 `agents.mcp` 的 `MCPServerSse` 类。服务器以子进程形式运行在 `https://localhost:8000/sse` 端口。

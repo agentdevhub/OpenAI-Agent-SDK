@@ -1,3 +1,3 @@
 # `Agent output`
 
-::: 智能体输出模块
+::: agents.agent_output

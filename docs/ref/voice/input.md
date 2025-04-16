@@ -1,3 +1,3 @@
 # `Input`
 
-::: 语音输入代理模块
+::: agents.voice.input

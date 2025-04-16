@@ -1,3 +1,3 @@
 # `Guardrails`
 
-::: 代理防护栏
+::: agents.guardrail

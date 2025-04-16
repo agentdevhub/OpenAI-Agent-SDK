@@ -1,3 +1,3 @@
 # `Result`
 
-::: 语音代理.处理结果
+::: agents.voice.result

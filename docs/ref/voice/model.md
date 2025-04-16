@@ -1,3 +1,3 @@
 # `Model`
 
-::: 语音代理模型
+::: agents.voice.model

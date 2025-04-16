@@ -1,3 +1,3 @@
 # `Workflow`
 
-::: 语音代理工作流
+::: agents.voice.workflow

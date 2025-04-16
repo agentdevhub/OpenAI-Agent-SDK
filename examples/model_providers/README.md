@@ -1,6 +1,6 @@
-# Custom LLM providers
+# 自定义大模型服务提供商
 
-The examples in this directory demonstrate how you might use a non-OpenAI LLM provider. To run them, first set a base URL, API key and model.
+本目录中的示例演示了如何使用非OpenAI的大模型服务提供商。运行这些示例前，需要先设置基础URL、API密钥和模型。
 
 ```bash
 export EXAMPLE_BASE_URL="..."
@@ -8,7 +8,7 @@ export EXAMPLE_API_KEY="..."
 export EXAMPLE_MODEL_NAME"..."
 ```
 
-Then run the examples, e.g.:
+然后运行示例，例如：
 
 ```
 python examples/model_providers/custom_example_provider.py

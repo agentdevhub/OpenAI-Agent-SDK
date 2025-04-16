@@ -1,26 +1,26 @@
-# Static voice demo
+# 静态语音演示
 
-This demo operates by capturing a recording, then running a voice pipeline on it.
+本演示通过录制音频后运行语音处理流程实现。
 
-Run via:
+运行方式：
 
 ```
 python -m examples.voice.static.main
 ```
 
-## How it works
+## 工作原理
 
-1. We create a `VoicePipeline`, setup with a custom workflow. The workflow runs an Agent, but it also has some custom responses if you say the secret word.
-2. When you speak, audio is forwarded to the voice pipeline. When you stop speaking, the agent runs.
-3. The pipeline is run with the audio, which causes it to:
-    1. Transcribe the audio
-    2. Feed the transcription to the workflow, which runs the agent.
-    3. Stream the output of the agent to a text-to-speech model.
-4. Play the audio.
+1. 我们创建了一个`VoicePipeline`，并配置了自定义工作流。该工作流会运行Agent，但如果你说出特定暗语，它也会触发一些定制响应。
+2. 当用户说话时，音频会被传送到语音处理流程。当用户停止说话时，Agent开始运行。
+3. 语音处理流程对音频执行以下操作：
+    1. 将音频转录为文字
+    2. 将转录文本输入工作流，由工作流执行Agent
+    3. 将Agent输出流式传输至文本转语音模型
+4. 播放生成的语音
 
-Some suggested examples to try:
+建议尝试的示例：
 
--   Tell me a joke (_the assistant tells you a joke_)
--   What's the weather in Tokyo? (_will call the `get_weather` tool and then speak_)
--   Hola, como estas? (_will handoff to the spanish agent_)
--   Tell me about dogs. (_will respond with the hardcoded "you guessed the secret word" message_)
+-   Tell me a joke（助手会讲一个笑话）
+-   What's the weather in Tokyo?（将调用`get_weather`工具后进行语音播报）
+-   Hola, como estas?（将转接至西班牙语Agent）
+-   Tell me about dogs.（将返回硬编码的"你猜中了暗语"消息）

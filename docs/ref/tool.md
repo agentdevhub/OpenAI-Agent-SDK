@@ -1,3 +1,3 @@
 # `Tools`
 
-::: 智能体工具
+::: agents.tool

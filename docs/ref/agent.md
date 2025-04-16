@@ -1,3 +1,3 @@
 # `Agents`
 
-::: 智能体.代理程序
+::: agents.agent

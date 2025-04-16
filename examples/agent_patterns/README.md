@@ -1,54 +1,54 @@
-# Common agentic patterns
+# 常见智能体模式
 
-This folder contains examples of different common patterns for agents.
+本目录包含不同智能体常用模式的示例。
 
-## Deterministic flows
+## 确定性流程
 
-A common tactic is to break down a task into a series of smaller steps. Each task can be performed by an agent, and the output of one agent is used as input to the next. For example, if your task was to generate a story, you could break it down into the following steps:
+常见策略是将任务拆分为一系列较小步骤。每个步骤可由智能体执行，前一个智能体的输出作为后一个的输入。例如，若需生成故事，可拆分为以下步骤：
 
-1. Generate an outline
-2. Generate the story
-3. Generate the ending
+1. 生成大纲
+2. 生成故事正文
+3. 生成结局
 
-Each of these steps can be performed by an agent. The output of one agent is used as input to the next.
+每个步骤由独立智能体完成，前序输出作为后续输入。
 
-See the [`deterministic.py`](./deterministic.py) file for an example of this.
+具体示例参见 [`deterministic.py`](./deterministic.py) 文件。
 
-## Handoffs and routing
+## 任务交接与路由
 
-In many situations, you have specialized sub-agents that handle specific tasks. You can use handoffs to route the task to the right agent.
+常见场景是由专业子智能体处理特定任务，通过交接机制将任务路由至正确代理。
 
-For example, you might have a frontline agent that receives a request, and then hands off to a specialized agent based on the language of the request.
-See the [`routing.py`](./routing.py) file for an example of this.
+例如：前线智能体接收请求后，根据请求语言转交给专业语言处理智能体。
+示例参见 [`routing.py`](./routing.py) 文件。
 
-## Agents as tools
+## 工具化智能体
 
-The mental model for handoffs is that the new agent "takes over". It sees the previous conversation history, and owns the conversation from that point onwards. However, this is not the only way to use agents. You can also use agents as a tool - the tool agent goes off and runs on its own, and then returns the result to the original agent.
+传统交接模式是新智能体"接管"对话，查看历史记录并主导后续交互。但智能体亦可作为工具使用：工具智能体独立运行后，将结果返回原智能体。
 
-For example, you could model the translation task above as tool calls instead: rather than handing over to the language-specific agent, you could call the agent as a tool, and then use the result in the next step. This enables things like translating multiple languages at once.
+以前述翻译任务为例，可采用工具调用模式：不转交语言专用智能体，而是将其作为工具调用，结果用于后续步骤。这种方式支持同时翻译多语言等场景。
 
-See the [`agents_as_tools.py`](./agents_as_tools.py) file for an example of this.
+示例参见 [`agents_as_tools.py`](./agents_as_tools.py) 文件。
 
-## LLM-as-a-judge
+## 大模型作为裁判
 
-LLMs can often improve the quality of their output if given feedback. A common pattern is to generate a response using a model, and then use a second model to provide feedback. You can even use a small model for the initial generation and a larger model for the feedback, to optimize cost.
+大模型在获得反馈后通常能提升输出质量。常见模式是先用模型生成响应，再用第二个模型提供反馈。为优化成本，甚至可用小模型生成初始结果，大模型提供反馈。
 
-For example, you could use an LLM to generate an outline for a story, and then use a second LLM to evaluate the outline and provide feedback. You can then use the feedback to improve the outline, and repeat until the LLM is satisfied with the outline.
+例如：用大模型生成故事大纲后，用第二个大模型评估大纲并提供改进建议，循环优化直至满意。
 
-See the [`llm_as_a_judge.py`](./llm_as_a_judge.py) file for an example of this.
+示例参见 [`llm_as_a_judge.py`](./llm_as_a_judge.py) 文件。
 
-## Parallelization
+## 并行执行
 
-Running multiple agents in parallel is a common pattern. This can be useful for both latency (e.g. if you have multiple steps that don't depend on each other) and also for other reasons e.g. generating multiple responses and picking the best one.
+并行运行多个智能体是常见模式，既有助于降低延迟（如多个无依赖步骤并行），也可用于生成多个响应择优选取。
 
-See the [`parallelization.py`](./parallelization.py) file for an example of this. It runs a translation agent multiple times in parallel, and then picks the best translation.
+[`parallelization.py`](./parallelization.py) 文件示例展示了并行运行翻译智能体并选择最佳结果。
 
-## Guardrails
+## 防护机制
 
-Related to parallelization, you often want to run input guardrails to make sure the inputs to your agents are valid. For example, if you have a customer support agent, you might want to make sure that the user isn't trying to ask for help with a math problem.
+与并行化相关的是输入防护机制，用于确保智能体输入的有效性。例如客服场景中，需防止用户提交数学问题求助。
 
-You can definitely do this without any special Agents SDK features by using parallelization, but we support a special guardrail primitive. Guardrails can have a "tripwire" - if the tripwire is triggered, the agent execution will immediately stop and a `GuardrailTripwireTriggered` exception will be raised.
+虽然通过并行化即可实现，但我们提供了专用防护原语。防护机制可设置"触发线"——若被触发，智能体会立即停止执行并抛出 `GuardrailTripwireTriggered` 异常。
 
-This is really useful for latency: for example, you might have a very fast model that runs the guardrail and a slow model that runs the actual agent. You wouldn't want to wait for the slow model to finish, so guardrails let you quickly reject invalid inputs.
+这对延迟优化至关重要：例如用快速模型运行防护检查，慢速模型执行实际任务时，可快速拒绝无效输入避免等待。
 
-See the [`input_guardrails.py`](./input_guardrails.py) and [`output_guardrails.py`](./output_guardrails.py) files for examples.
+输入/输出防护示例分别参见 [`input_guardrails.py`](./input_guardrails.py) 和 [`output_guardrails.py`](./output_guardrails.py) 文件。

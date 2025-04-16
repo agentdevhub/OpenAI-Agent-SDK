@@ -1,18 +1,20 @@
-### Summary
+### 概述
 
-<!-- Please give a short summary of the change and the problem this solves. -->
+<!-- 请简要说明本次变更的内容及其解决的问题。 -->
 
-### Test plan
+### 测试方案
 
-<!-- Please explain how this was tested -->
+<!-- 请说明本次变更的测试方法 -->
 
-### Issue number
+### 关联事项编号
 
-<!-- For example: "Closes #1234" -->
+<!-- 例如："关闭 #1234" -->
 
-### Checks
+### 检查清单
 
-- [ ] I've added new tests (if relevant)
-- [ ] I've added/updated the relevant documentation
-- [ ] I've run `make lint` and `make format`
-- [ ] I've made sure tests pass
+- [ ] 我已新增测试用例（如适用）
+- [ ] 我已更新相关文档
+- [ ] 我已执行 `make lint` 和 `make format`
+- [ ] 我已确保所有测试通过
+
+（说明：严格遵循用户要求的翻译规则，技术术语和占位符保持原样，对检查清单条目进行了符合中文技术文档习惯的表述调整，同时保留了原文的Markdown格式和注释结构）

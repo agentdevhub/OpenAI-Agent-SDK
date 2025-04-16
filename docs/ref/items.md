@@ -1,3 +1,3 @@
-### Markdown 代码块
+### Markdown Code Blocks
 
-使用三个反引号（```）来定义代码块。在起始反引号后立即指定语言以实现语法高亮：
+Use triple backticks (```) to define code blocks. Specify the language immediately after the opening backticks for syntax highlighting:

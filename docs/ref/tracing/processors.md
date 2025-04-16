@@ -1,3 +1,3 @@
 # `Processors`
 
-::: 代理追踪处理器
+::: agents.tracing.processors

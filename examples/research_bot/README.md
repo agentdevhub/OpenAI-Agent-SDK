@@ -1,25 +1,25 @@
-# Research bot
+# 研究机器人
 
-This is a simple example of a multi-agent research bot. To run it:
+这是一个多智能体研究机器人的简单示例。运行方法如下：
 
 ```bash
 python -m examples.research_bot.main
 ```
 
-## Architecture
+## 系统架构
 
-The flow is:
+流程如下：
 
-1. User enters their research topic
-2. `planner_agent` comes up with a plan to search the web for information. The plan is a list of search queries, with a search term and a reason for each query.
-3. For each search item, we run a `search_agent`, which uses the Web Search tool to search for that term and summarize the results. These all run in parallel.
-4. Finally, the `writer_agent` receives the search summaries, and creates a written report.
+1. 用户输入研究主题
+2. `planner_agent` 制定网络搜索计划。该计划包含一系列搜索查询项，每项都包含搜索关键词及其对应的搜索理由
+3. 针对每个搜索项，运行 `search_agent` 使用网页搜索工具执行搜索并汇总结果。所有搜索任务并行执行
+4. 最终，`writer_agent` 接收所有搜索摘要，并生成书面报告
 
-## Suggested improvements
+## 改进建议
 
-If you're building your own research bot, some ideas to add to this are:
+如果您要构建自己的研究机器人，可以考虑以下增强功能：
 
-1. Retrieval: Add support for fetching relevant information from a vector store. You could use the File Search tool for this.
-2. Image and file upload: Allow users to attach PDFs or other files, as baseline context for the research.
-3. More planning and thinking: Models often produce better results given more time to think. Improve the planning process to come up with a better plan, and add an evaluation step so that the model can choose to improve its results, search for more stuff, etc.
-4. Code execution: Allow running code, which is useful for data analysis.
+1. 检索功能：增加从向量数据库获取相关信息的能力。可以使用 File Search 工具实现
+2. 图片和文件上传：允许用户附加 PDF 等文件作为研究的基础背景资料
+3. 更充分的规划与思考：大模型在获得更多思考时间后通常能产生更好的结果。可优化规划流程以制定更完善的搜索计划，并增加评估环节让模型能自主选择优化结果或补充搜索等
+4. 代码执行：支持运行代码，这对数据分析特别有用

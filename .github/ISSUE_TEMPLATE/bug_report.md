@@ -1,28 +1,26 @@
 ---
 name: Bug report
-about: Report a bug
+about: 提交缺陷报告
 title: ''
 labels: bug
 assignees: ''
 
 ---
 
-### Please read this first
+### 请首先阅读以下内容
 
-- **Have you read the docs?**[Agents SDK docs](https://openai.github.io/openai-agents-python/)
-- **Have you searched for related issues?** Others may have faced similar issues.
+- **是否已查阅文档？**[Agents SDK 文档](https://openai.github.io/openai-agents-python/)
+- **是否搜索过相关issue？** 其他用户可能遇到过类似问题
 
-### Describe the bug
-A clear and concise description of what the bug is.
+### 问题描述
+清晰准确地描述缺陷现象
 
-### Debug information
-- Agents SDK version: (e.g. `v0.0.3`)
-- Python version (e.g. Python 3.10)
+### 调试信息
+- Agents SDK 版本: (例如 `v0.0.3`)
+- Python 版本 (例如 Python 3.10)
 
-### Repro steps
+### 重现步骤
+请尽量提供一个可运行的最小化 Python 脚本来重现该缺陷
 
-Ideally provide a minimal python script that can be run to reproduce the bug.
-
-
-### Expected behavior
-A clear and concise description of what you expected to happen.
+### 预期行为
+清晰准确地描述您期望发生的正确行为

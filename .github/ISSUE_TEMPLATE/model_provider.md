@@ -1,26 +1,26 @@
 ---
-name: Custom model providers
-about: Questions or bugs about using non-OpenAI models
+name: 自定义模型供应商
+about: 关于使用非OpenAI模型的问题或缺陷
 title: ''
 labels: bug
 assignees: ''
 
 ---
 
-### Please read this first
+### 请先阅读以下内容
 
-- **Have you read the custom model provider docs, including the 'Common issues' section?** [Model provider docs](https://openai.github.io/openai-agents-python/models/#using-other-llm-providers)
-- **Have you searched for related issues?** Others may have faced similar issues.
+- **是否已阅读自定义模型供应商文档（含'常见问题'章节）？** [模型供应商文档](https://openai.github.io/openai-agents-python/models/#using-other-llm-providers)
+- **是否已搜索相关问题？** 其他用户可能遇到过类似问题。
 
-### Describe the question
-A clear and concise description of what the question or bug is.
+### 问题描述
+请清晰简明地描述遇到的问题或缺陷。
 
-### Debug information
-- Agents SDK version: (e.g. `v0.0.3`)
-- Python version (e.g. Python 3.10)
+### 调试信息
+- Agents SDK版本：（例如 `v0.0.3`）
+- Python版本（例如 Python 3.10）
 
-### Repro steps
-Ideally provide a minimal python script that can be run to reproduce the issue.
+### 重现步骤
+建议提供一个可运行的最小化Python脚本来复现该问题。
 
-### Expected behavior
-A clear and concise description of what you expected to happen.
+### 预期行为
+请清晰简明地描述您期望发生的正常行为。

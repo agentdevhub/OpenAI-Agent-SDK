@@ -1,26 +1,26 @@
-# MCP Filesystem Example
+# MCP 文件系统示例
 
-This example uses the [filesystem MCP server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem), running locally via `npx`.
+本示例使用[filesystem MCP服务器](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)，通过`npx`在本地运行。
 
-Run it via:
+运行方式：
 
 ```
 uv run python examples/mcp/filesystem_example/main.py
 ```
 
-## Details
+## 实现细节
 
-The example uses the `MCPServerStdio` class from `agents.mcp`, with the command:
+该示例使用来自`agents.mcp`的`MCPServerStdio`类，并执行以下命令：
 
 ```bash
 npx -y "@modelcontextprotocol/server-filesystem" <samples_directory>
 ```
 
-It's only given access to the `sample_files` directory adjacent to the example, which contains some sample data.
+仅授予该示例访问同级目录`sample_files`的权限，该目录包含一些示例数据。
 
-Under the hood:
+底层实现原理：
 
-1. The server is spun up in a subprocess, and exposes a bunch of tools like `list_directory()`, `read_file()`, etc.
-2. We add the server instance to the Agent via `mcp_agents`.
-3. Each time the agent runs, we call out to the MCP server to fetch the list of tools via `server.list_tools()`.
-4. If the LLM chooses to use an MCP tool, we call the MCP server to run the tool via `server.run_tool()`.
+1. 服务器在子进程中启动，并暴露一系列工具如`list_directory()`、`read_file()`等
+2. 通过`mcp_agents`将服务器实例添加到Agent中
+3. 每次Agent运行时，都会调用MCP服务器通过`server.list_tools()`获取工具列表
+4. 当大模型选择使用MCP工具时，通过`server.run_tool()`调用MCP服务器执行该工具
