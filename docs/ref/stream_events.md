@@ -1,3 +1,3 @@
 # `Streaming events`
 
-::: agents.stream_events
+::: 代理流事件

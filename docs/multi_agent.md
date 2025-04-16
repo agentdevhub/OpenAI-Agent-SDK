@@ -1,37 +1,37 @@
-# Orchestrating multiple agents
+# 多智能体编排技术指南
 
-Orchestration refers to the flow of agents in your app. Which agents run, in what order, and how do they decide what happens next? There are two main ways to orchestrate agents:
+编排（Orchestration）指的是应用程序中智能体的运行流程。哪些智能体执行任务、以何种顺序执行、以及如何决定后续操作？目前主要有两种智能体编排方式：
 
-1. Allowing the LLM to make decisions: this uses the intelligence of an LLM to plan, reason, and decide on what steps to take based on that.
-2. Orchestrating via code: determining the flow of agents via your code.
+1. 让大模型自主决策：利用大模型的智能进行规划、推理并决定执行步骤
+2. 通过代码编排：用代码控制智能体的执行流程
 
-You can mix and match these patterns. Each has their own tradeoffs, described below.
+这两种模式可以混合使用，各自存在不同的优劣点，下文将详细说明。
 
-## Orchestrating via LLM
+## 大模型自主编排模式
 
-An agent is an LLM equipped with instructions, tools and handoffs. This means that given an open-ended task, the LLM can autonomously plan how it will tackle the task, using tools to take actions and acquire data, and using handoffs to delegate tasks to sub-agents. For example, a research agent could be equipped with tools like:
+智能体是配备了指令、工具和任务移交机制的大模型。这意味着面对开放式任务时，大模型能够自主规划解决方案：使用工具执行操作获取数据，通过移交机制将任务分配给子智能体。例如，一个研究型智能体可配备以下工具：
 
--   Web search to find information online
--   File search and retrieval to search through proprietary data and connections
--   Computer use to take actions on a computer
--   Code execution to do data analysis
--   Handoffs to specialized agents that are great at planning, report writing and more.
+- 网络搜索工具获取在线信息
+- 文件检索工具查询专有数据
+- 计算机操作工具执行本地操作
+- 代码执行工具进行数据分析
+- 任务移交机制委托给擅长规划、报告撰写等专项智能体
 
-This pattern is great when the task is open-ended and you want to rely on the intelligence of an LLM. The most important tactics here are:
+这种模式非常适合开放式任务场景，能充分发挥大模型的智能优势。关键实施策略包括：
 
-1. Invest in good prompts. Make it clear what tools are available, how to use them, and what parameters it must operate within.
-2. Monitor your app and iterate on it. See where things go wrong, and iterate on your prompts.
-3. Allow the agent to introspect and improve. For example, run it in a loop, and let it critique itself; or, provide error messages and let it improve.
-4. Have specialized agents that excel in one task, rather than having a general purpose agent that is expected to be good at anything.
-5. Invest in [evals](https://platform.openai.com/docs/guides/evals). This lets you train your agents to improve and get better at tasks.
+1. 精心设计提示词：明确可用工具、使用方式及操作边界
+2. 持续监控与迭代：分析故障点并优化提示词
+3. 引入自省机制：例如循环执行时让智能体自我评估，或根据错误信息自我修正
+4. 采用专项智能体：而非期待通用智能体胜任所有任务
+5. 建立评估体系：通过[evals](https://platform.openai.com/docs/guides/evals)持续训练提升智能体表现
 
-## Orchestrating via code
+## 代码化编排模式
 
-While orchestrating via LLM is powerful, orchestrating via code makes tasks more deterministic and predictable, in terms of speed, cost and performance. Common patterns here are:
+虽然大模型自主编排能力强大，但代码化编排能在执行速度、成本控制和性能表现方面提供更确定性的结果。常见实现模式包括：
 
--   Using [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) to generate well formed data that you can inspect with your code. For example, you might ask an agent to classify the task into a few categories, and then pick the next agent based on the category.
--   Chaining multiple agents by transforming the output of one into the input of the next. You can decompose a task like writing a blog post into a series of steps - do research, write an outline, write the blog post, critique it, and then improve it.
--   Running the agent that performs the task in a `while` loop with an agent that evaluates and provides feedback, until the evaluator says the output passes certain criteria.
--   Running multiple agents in parallel, e.g. via Python primitives like `asyncio.gather`. This is useful for speed when you have multiple tasks that don't depend on each other.
+- 使用[结构化输出](https://platform.openai.com/docs/guides/structured-outputs)：生成规范数据供代码逻辑判断，例如先让智能体对任务分类，再根据类别选择后续智能体
+- 构建处理链：将任务分解为串联的智能体流水线，比如博客写作可拆分为研究->大纲->撰写->润色->改进等环节
+- 实现评估循环：在`while`循环中，执行智能体与评估智能体持续交互，直到输出满足预设标准
+- 并行执行机制：通过`asyncio.gather`等Python原生方式并行运行多个智能体，适用于无依赖关系的批量任务加速
 
-We have a number of examples in [`examples/agent_patterns`](https://github.com/openai/openai-agents-python/tree/main/examples/agent_patterns).
+更多示例请参见[`examples/agent_patterns`](https://github.com/openai/openai-agents-python/tree/main/examples/agent_patterns)代码库。

@@ -1,51 +1,51 @@
-# Tracing
+# 追踪功能
 
-The Agents SDK includes built-in tracing, collecting a comprehensive record of events during an agent run: LLM generations, tool calls, handoffs, guardrails, and even custom events that occur. Using the [Traces dashboard](https://platform.openai.com/traces), you can debug, visualize, and monitor your workflows during development and in production.
+Agents SDK 内置了追踪功能，能够全面记录智能体运行期间的所有事件：包括大模型生成内容、工具调用、交接流程、防护机制触发以及自定义事件等。通过 [Traces 控制面板](https://platform.openai.com/traces)，您可以在开发和生产环境中调试、可视化监控工作流程。
 
-!!!note
+!!!注意
 
-    Tracing is enabled by default. There are two ways to disable tracing:
+    追踪功能默认启用。如需禁用可通过以下两种方式：
 
-    1. You can globally disable tracing by setting the env var `OPENAI_AGENTS_DISABLE_TRACING=1`
-    2. You can disable tracing for a single run by setting [`agents.run.RunConfig.tracing_disabled`][] to `True`
+    1. 通过设置环境变量 `OPENAI_AGENTS_DISABLE_TRACING=1` 全局关闭追踪功能
+    2. 针对单次运行禁用追踪：将 [`agents.run.RunConfig.tracing_disabled`][] 设为 `True`
 
-***For organizations operating under a Zero Data Retention (ZDR) policy using OpenAI's APIs, tracing is unavailable.***
+***对于使用 OpenAI API 并执行零数据保留（ZDR）政策的组织，追踪功能不可用。***
 
-## Traces and spans
+## 追踪与跨度
 
--   **Traces** represent a single end-to-end operation of a "workflow". They're composed of Spans. Traces have the following properties:
-    -   `workflow_name`: This is the logical workflow or app. For example "Code generation" or "Customer service".
-    -   `trace_id`: A unique ID for the trace. Automatically generated if you don't pass one. Must have the format `trace_<32_alphanumeric>`.
-    -   `group_id`: Optional group ID, to link multiple traces from the same conversation. For example, you might use a chat thread ID.
-    -   `disabled`: If True, the trace will not be recorded.
-    -   `metadata`: Optional metadata for the trace.
--   **Spans** represent operations that have a start and end time. Spans have:
-    -   `started_at` and `ended_at` timestamps.
-    -   `trace_id`, to represent the trace they belong to
-    -   `parent_id`, which points to the parent Span of this Span (if any)
-    -   `span_data`, which is information about the Span. For example, `AgentSpanData` contains information about the Agent, `GenerationSpanData` contains information about the LLM generation, etc.
+-   **Traces（追踪记录）** 表示一个完整"工作流"的端到端操作，由多个 Span 组成。追踪记录包含以下属性：
+    -   `workflow_name`：表示逻辑工作流或应用名称，例如"代码生成"或"客户服务"
+    -   `trace_id`：追踪记录的唯一标识符。若未提供将自动生成，必须符合 `trace_<32_alphanumeric>` 格式
+    -   `group_id`：可选分组 ID，用于关联同一会话中的多个追踪记录（例如聊天线程 ID）
+    -   `disabled`：若为 True，则该追踪记录不会被保存
+    -   `metadata`：追踪记录的元数据（可选）
+-   **Spans（跨度）** 表示具有起止时间的操作单元。跨度包含：
+    -   `started_at` 和 `ended_at` 时间戳
+    -   所属追踪记录的 `trace_id`
+    -   指向父级跨度的 `parent_id`（如存在）
+    -   记录跨度详情的 `span_data`。例如 `AgentSpanData` 包含智能体信息，`GenerationSpanData` 包含大模型生成信息等
 
-## Default tracing
+## 默认追踪项
 
-By default, the SDK traces the following:
+SDK 默认追踪以下内容：
 
--   The entire `Runner.{run, run_sync, run_streamed}()` is wrapped in a `trace()`.
--   Each time an agent runs, it is wrapped in `agent_span()`
--   LLM generations are wrapped in `generation_span()`
--   Function tool calls are each wrapped in `function_span()`
--   Guardrails are wrapped in `guardrail_span()`
--   Handoffs are wrapped in `handoff_span()`
--   Audio inputs (speech-to-text) are wrapped in a `transcription_span()`
--   Audio outputs (text-to-speech) are wrapped in a `speech_span()`
--   Related audio spans may be parented under a `speech_group_span()`
+-   整个 `Runner.{run, run_sync, run_streamed}()` 会被包裹在 `trace()` 中
+-   每次智能体运行时会被包裹在 `agent_span()`
+-   大模型生成内容会被包裹在 `generation_span()`
+-   函数工具调用会被分别包裹在 `function_span()`
+-   防护机制触发会被包裹在 `guardrail_span()`
+-   交接流程会被包裹在 `handoff_span()`
+-   语音输入（语音转文字）会被包裹在 `transcription_span()`
+-   语音输出（文字转语音）会被包裹在 `speech_span()`
+-   相关音频跨度可能归属于同一个 `speech_group_span()`
 
-By default, the trace is named "Agent trace". You can set this name if you use `trace`, or you can can configure the name and other properties with the [`RunConfig`][agents.run.RunConfig].
+默认追踪记录命名为"Agent trace"。使用 `trace` 可自定义名称，或通过 [`RunConfig`][agents.run.RunConfig] 配置名称及其他属性。
 
-In addition, you can set up [custom trace processors](#custom-tracing-processors) to push traces to other destinations (as a replacement, or secondary destination).
+此外，您可以设置 [自定义追踪处理器](#custom-tracing-processors) 将追踪数据推送至其他目标（作为替代或补充存储）。
 
-## Higher level traces
+## 高阶追踪
 
-Sometimes, you might want multiple calls to `run()` to be part of a single trace. You can do this by wrapping the entire code in a `trace()`.
+若需将多次 `run()` 调用归入同一条追踪记录，可使用 `trace()` 包裹相关代码。
 
 ```python
 from agents import Agent, Runner, trace
@@ -60,49 +60,49 @@ async def main():
         print(f"Rating: {second_result.final_output}")
 ```
 
-1. Because the two calls to `Runner.run` are wrapped in a `with trace()`, the individual runs will be part of the overall trace rather than creating two traces.
+1. 由于两次 `Runner.run` 调用被包裹在 `with trace()` 中，这些独立运行将被整合到总体追踪记录而非创建两条独立记录。
 
-## Creating traces
+## 创建追踪记录
 
-You can use the [`trace()`][agents.tracing.trace] function to create a trace. Traces need to be started and finished. You have two options to do so:
+使用 [`trace()`][agents.tracing.trace] 函数可创建追踪记录。追踪记录需要显式启停，有两种操作方式：
 
-1. **Recommended**: use the trace as a context manager, i.e. `with trace(...) as my_trace`. This will automatically start and end the trace at the right time.
-2. You can also manually call [`trace.start()`][agents.tracing.Trace.start] and [`trace.finish()`][agents.tracing.Trace.finish].
+1. **推荐方案**：将追踪记录作为上下文管理器使用（即 `with trace(...) as my_trace`），系统会自动在适当时机启停
+2. 也可手动调用 [`trace.start()`][agents.tracing.Trace.start] 和 [`trace.finish()`][agents.tracing.Trace.finish]
 
-The current trace is tracked via a Python [`contextvar`](https://docs.python.org/3/library/contextvars.html). This means that it works with concurrency automatically. If you manually start/end a trace, you'll need to pass `mark_as_current` and `reset_current` to `start()`/`finish()` to update the current trace.
+当前追踪记录通过 Python 的 [`contextvar`](https://docs.python.org/3/library/contextvars.html) 实现状态跟踪，天然支持并发场景。若手动启停追踪记录，需向 `start()`/`finish()` 传递 `mark_as_current` 和 `reset_current` 参数来更新当前追踪状态。
 
-## Creating spans
+## 创建跨度
 
-You can use the various [`*_span()`][agents.tracing.create] methods to create a span. In general, you don't need to manually create spans. A [`custom_span()`][agents.tracing.custom_span] function is available for tracking custom span information.
+通过各类 [`*_span()`][agents.tracing.create] 方法可创建跨度。通常无需手动创建，系统提供 [`custom_span()`][agents.tracing.custom_span] 函数用于跟踪自定义跨度信息。
 
-Spans are automatically part of the current trace, and are nested under the nearest current span, which is tracked via a Python [`contextvar`](https://docs.python.org/3/library/contextvars.html).
+跨度自动归属于当前追踪记录，并嵌套在最近的当前跨度下，其层级关系通过 Python 的 [`contextvar`](https://docs.python.org/3/library/contextvars.html) 实现跟踪。
 
-## Sensitive data
+## 敏感数据处理
 
-Certain spans may capture potentially sensitive data.
+部分跨度可能捕获敏感数据：
 
-The `generation_span()` stores the inputs/outputs of the LLM generation, and `function_span()` stores the inputs/outputs of function calls. These may contain sensitive data, so you can disable capturing that data via [`RunConfig.trace_include_sensitive_data`][agents.run.RunConfig.trace_include_sensitive_data].
+`generation_span()` 存储大模型生成内容的输入输出，`function_span()` 存储函数调用的输入输出。这些数据可能包含敏感信息，可通过 [`RunConfig.trace_include_sensitive_data`][agents.run.RunConfig.trace_include_sensitive_data] 禁用采集。
 
-Similarly, Audio spans include base64-encoded PCM data for input and output audio by default. You can disable capturing this audio data by configuring [`VoicePipelineConfig.trace_include_sensitive_audio_data`][agents.voice.pipeline_config.VoicePipelineConfig.trace_include_sensitive_audio_data].
+同理，音频跨度默认包含输入输出音频的 base64 编码 PCM 数据，可通过配置 [`VoicePipelineConfig.trace_include_sensitive_audio_data`][agents.voice.pipeline_config.VoicePipelineConfig.trace_include_sensitive_audio_data] 禁用音频数据采集。
 
-## Custom tracing processors
+## 自定义追踪处理器
 
-The high level architecture for tracing is:
+追踪功能的顶层架构如下：
 
--   At initialization, we create a global [`TraceProvider`][agents.tracing.setup.TraceProvider], which is responsible for creating traces.
--   We configure the `TraceProvider` with a [`BatchTraceProcessor`][agents.tracing.processors.BatchTraceProcessor] that sends traces/spans in batches to a [`BackendSpanExporter`][agents.tracing.processors.BackendSpanExporter], which exports the spans and traces to the OpenAI backend in batches.
+-   初始化时创建全局 [`TraceProvider`][agents.tracing.setup.TraceProvider] 负责生成追踪记录
+-   为 `TraceProvider` 配置 [`BatchTraceProcessor`][agents.tracing.processors.BatchTraceProcessor]，通过 [`BackendSpanExporter`][agents.tracing.processors.BackendSpanExporter] 将追踪记录/跨度批量发送至 OpenAI 后端
 
-To customize this default setup, to send traces to alternative or additional backends or modifying exporter behavior, you have two options:
+如需定制该默认配置（例如发送到其他后端或修改导出行为），有两种方案：
 
-1. [`add_trace_processor()`][agents.tracing.add_trace_processor] lets you add an **additional** trace processor that will receive traces and spans as they are ready. This lets you do your own processing in addition to sending traces to OpenAI's backend.
-2. [`set_trace_processors()`][agents.tracing.set_trace_processors] lets you **replace** the default processors with your own trace processors. This means traces will not be sent to the OpenAI backend unless you include a `TracingProcessor` that does so.
+1. [`add_trace_processor()`][agents.tracing.add_trace_processor] 可添加**额外**的追踪处理器，在数据就绪时接收追踪信息（不影响向 OpenAI 后端发送数据）
+2. [`set_trace_processors()`][agents.tracing.set_trace_processors] 可**替换**默认处理器（除非包含 `TracingProcessor` 处理器，否则不会向 OpenAI 后端发送数据）
 
-## External tracing processors list
+## 第三方追踪处理器列表
 
 -   [Weights & Biases](https://weave-docs.wandb.ai/guides/integrations/openai_agents)
 -   [Arize-Phoenix](https://docs.arize.com/phoenix/tracing/integrations-tracing/openai-agents-sdk)
--   [MLflow (self-hosted/OSS](https://mlflow.org/docs/latest/tracing/integrations/openai-agent)
--   [MLflow (Databricks hosted](https://docs.databricks.com/aws/en/mlflow/mlflow-tracing#-automatic-tracing)
+-   [MLflow（自托管/开源版）](https://mlflow.org/docs/latest/tracing/integrations/openai-agent)
+-   [MLflow（Databricks 托管版）](https://docs.databricks.com/aws/en/mlflow/mlflow-tracing#-automatic-tracing)
 -   [Braintrust](https://braintrust.dev/docs/guides/traces/integrations#openai-agents-sdk)
 -   [Pydantic Logfire](https://logfire.pydantic.dev/docs/integrations/llms/openai/#openai-agents)
 -   [AgentOps](https://docs.agentops.ai/v1/integrations/agentssdk)

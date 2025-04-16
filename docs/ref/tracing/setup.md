@@ -1,3 +1,3 @@
 # `Setup`
 
-::: agents.tracing.setup
+::: 代理追踪设置

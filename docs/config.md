@@ -1,8 +1,8 @@
-# Configuring the SDK
+# SDK配置指南
 
-## API keys and clients
+## API密钥与客户端配置
 
-By default, the SDK looks for the `OPENAI_API_KEY` environment variable for LLM requests and tracing, as soon as it is imported. If you are unable to set that environment variable before your app starts, you can use the [set_default_openai_key()][agents.set_default_openai_key] function to set the key.
+默认情况下，SDK在导入时会自动检查`OPENAI_API_KEY`环境变量以获取大模型请求和追踪所需的密钥。若无法在应用启动前设置该环境变量，可使用[set_default_openai_key()][agents.set_default_openai_key]函数进行密钥配置。
 
 ```python
 from agents import set_default_openai_key
@@ -10,7 +10,7 @@ from agents import set_default_openai_key
 set_default_openai_key("sk-...")
 ```
 
-Alternatively, you can also configure an OpenAI client to be used. By default, the SDK creates an `AsyncOpenAI` instance, using the API key from the environment variable or the default key set above. You can change this by using the [set_default_openai_client()][agents.set_default_openai_client] function.
+您也可以配置自定义的OpenAI客户端。SDK默认会基于环境变量或上述预设密钥创建`AsyncOpenAI`实例，如需修改此行为，请使用[set_default_openai_client()][agents.set_default_openai_client]函数。
 
 ```python
 from openai import AsyncOpenAI
@@ -20,7 +20,7 @@ custom_client = AsyncOpenAI(base_url="...", api_key="...")
 set_default_openai_client(custom_client)
 ```
 
-Finally, you can also customize the OpenAI API that is used. By default, we use the OpenAI Responses API. You can override this to use the Chat Completions API by using the [set_default_openai_api()][agents.set_default_openai_api] function.
+此外，您还可以自定义使用的OpenAI API类型。默认采用OpenAI Responses API，如需切换至Chat Completions API，请调用[set_default_openai_api()][agents.set_default_openai_api]函数。
 
 ```python
 from agents import set_default_openai_api
@@ -28,9 +28,9 @@ from agents import set_default_openai_api
 set_default_openai_api("chat_completions")
 ```
 
-## Tracing
+## 追踪功能配置
 
-Tracing is enabled by default. It uses the OpenAI API keys from the section above by default (i.e. the environment variable or the default key you set). You can specifically set the API key used for tracing by using the [`set_tracing_export_api_key`][agents.set_tracing_export_api_key] function.
+追踪功能默认启用，其默认使用前文所述的OpenAI API密钥（即环境变量或预设密钥）。如需单独设置追踪功能的API密钥，请使用[`set_tracing_export_api_key`][agents.set_tracing_export_api_key]函数。
 
 ```python
 from agents import set_tracing_export_api_key
@@ -38,7 +38,7 @@ from agents import set_tracing_export_api_key
 set_tracing_export_api_key("sk-...")
 ```
 
-You can also disable tracing entirely by using the [`set_tracing_disabled()`][agents.set_tracing_disabled] function.
+如需完全禁用追踪功能，可调用[`set_tracing_disabled()`][agents.set_tracing_disabled]函数。
 
 ```python
 from agents import set_tracing_disabled
@@ -46,11 +46,11 @@ from agents import set_tracing_disabled
 set_tracing_disabled(True)
 ```
 
-## Debug logging
+## 调试日志配置
 
-The SDK has two Python loggers without any handlers set. By default, this means that warnings and errors are sent to `stdout`, but other logs are suppressed.
+SDK内置两个未配置处理器的Python日志记录器。默认情况下，仅警告和错误信息会输出至`stdout`，其他日志将被抑制。
 
-To enable verbose logging, use the [`enable_verbose_stdout_logging()`][agents.enable_verbose_stdout_logging] function.
+如需启用详细日志输出，请使用[`enable_verbose_stdout_logging()`][agents.enable_verbose_stdout_logging]函数。
 
 ```python
 from agents import enable_verbose_stdout_logging
@@ -58,7 +58,7 @@ from agents import enable_verbose_stdout_logging
 enable_verbose_stdout_logging()
 ```
 
-Alternatively, you can customize the logs by adding handlers, filters, formatters, etc. You can read more in the [Python logging guide](https://docs.python.org/3/howto/logging.html).
+您也可以通过添加处理器、过滤器、格式化器等自定义日志行为，更多细节请参阅[Python日志指南](https://docs.python.org/3/howto/logging.html)。
 
 ```python
 import logging
@@ -77,18 +77,16 @@ logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 ```
 
-### Sensitive data in logs
+### 日志中的敏感数据
 
-Certain logs may contain sensitive data (for example, user data). If you want to disable this data from being logged, set the following environment variables.
+部分日志可能包含敏感信息（例如用户数据）。如需禁用此类数据记录，请设置以下环境变量：
 
-To disable logging LLM inputs and outputs:
-
+禁用大模型输入输出日志记录：
 ```bash
 export OPENAI_AGENTS_DONT_LOG_MODEL_DATA=1
 ```
 
-To disable logging tool inputs and outputs:
-
+禁用工具输入输出日志记录：
 ```bash
 export OPENAI_AGENTS_DONT_LOG_TOOL_DATA=1
 ```

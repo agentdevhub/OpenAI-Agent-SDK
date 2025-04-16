@@ -1,3 +1,3 @@
 # `Usage`
 
-::: agents.usage
+::: 智能体使用指南

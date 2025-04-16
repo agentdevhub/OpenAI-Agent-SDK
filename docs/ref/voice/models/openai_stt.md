@@ -1,3 +1,3 @@
 # `OpenAI STT`
 
-::: agents.voice.models.openai_stt
+::: 语音代理模块.openai_stt模型

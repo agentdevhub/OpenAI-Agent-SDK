@@ -1,10 +1,10 @@
-# Running agents
+# 运行智能体
 
-You can run agents via the [`Runner`][agents.run.Runner] class. You have 3 options:
+您可以通过[`Runner`][agents.run.Runner]类来运行智能体，共有三种运行方式：
 
-1. [`Runner.run()`][agents.run.Runner.run], which runs async and returns a [`RunResult`][agents.result.RunResult].
-2. [`Runner.run_sync()`][agents.run.Runner.run_sync], which is a sync method and just runs `.run()` under the hood.
-3. [`Runner.run_streamed()`][agents.run.Runner.run_streamed], which runs async and returns a [`RunResultStreaming`][agents.result.RunResultStreaming]. It calls the LLM in streaming mode, and streams those events to you as they are received.
+1. [`Runner.run()`][agents.run.Runner.run]：异步运行方法，返回[`RunResult`][agents.result.RunResult]
+2. [`Runner.run_sync()`][agents.run.Runner.run_sync]：同步运行方法，底层实际调用的是`.run()`
+3. [`Runner.run_streamed()`][agents.run.Runner.run_streamed]：异步流式运行方法，返回[`RunResultStreaming`][agents.result.RunResultStreaming]。该方法以大模型流式模式调用，并实时将接收到的流事件推送给您
 
 ```python
 from agents import Agent, Runner
@@ -19,53 +19,52 @@ async def main():
     # Infinite loop's dance.
 ```
 
-Read more in the [results guide](results.md).
+更多细节请参阅[结果指南](results.md)。
 
-## The agent loop
+## 智能体运行循环
 
-When you use the run method in `Runner`, you pass in a starting agent and input. The input can either be a string (which is considered a user message), or a list of input items, which are the items in the OpenAI Responses API.
+当使用`Runner`中的运行方法时，您需要传入初始智能体和输入参数。输入可以是字符串（视为用户消息），也可以是OpenAI Responses API中的输入项列表。
 
-The runner then runs a loop:
+运行器会执行以下循环流程：
 
-1. We call the LLM for the current agent, with the current input.
-2. The LLM produces its output.
-    1. If the LLM returns a `final_output`, the loop ends and we return the result.
-    2. If the LLM does a handoff, we update the current agent and input, and re-run the loop.
-    3. If the LLM produces tool calls, we run those tool calls, append the results, and re-run the loop.
-3. If we exceed the `max_turns` passed, we raise a [`MaxTurnsExceeded`][agents.exceptions.MaxTurnsExceeded] exception.
+1. 使用当前输入调用当前智能体的大模型
+2. 大模型生成输出结果：
+    1. 如果返回`final_output`，则循环终止并返回最终结果
+    2. 如果执行了交接（handoff），则更新当前智能体和输入参数，重新开始循环
+    3. 如果产生了工具调用，则执行这些工具调用，将结果追加后重新开始循环
+3. 如果超过传入的`max_turns`限制，则抛出[`MaxTurnsExceeded`][agents.exceptions.MaxTurnsExceeded]异常
 
-!!! note
+!!! 注意  
+    判断大模型输出是否为"最终输出"的规则是：输出符合预期类型的文本内容且不包含任何工具调用。
 
-    The rule for whether the LLM output is considered as a "final output" is that it produces text output with the desired type, and there are no tool calls.
+## 流式处理
 
-## Streaming
+流式运行允许您在大模型执行过程中实时接收流事件。流式处理完成后，[`RunResultStreaming`][agents.result.RunResultStreaming]会包含完整的运行信息（包括所有新生成的输出）。您可以通过`.stream_events()`获取流事件详情，详见[流式指南](streaming.md)。
 
-Streaming allows you to additionally receive streaming events as the LLM runs. Once the stream is done, the [`RunResultStreaming`][agents.result.RunResultStreaming] will contain the complete information about the run, including all the new outputs produces. You can call `.stream_events()` for the streaming events. Read more in the [streaming guide](streaming.md).
+## 运行配置
 
-## Run config
+`run_config`参数支持配置智能体运行的全局设置：
 
-The `run_config` parameter lets you configure some global settings for the agent run:
+- [`model`][agents.run.RunConfig.model]：设置全局大模型，覆盖各Agent的`model`配置
+- [`model_provider`][agents.run.RunConfig.model_provider]：模型提供商（默认为OpenAI），用于查找模型名称
+- [`model_settings`][agents.run.RunConfig.model_settings]：覆盖智能体特定设置，例如设置全局`temperature`或`top_p`
+- [`input_guardrails`][agents.run.RunConfig.input_guardrails], [`output_guardrails`][agents.run.RunConfig.output_guardrails]：为所有运行添加输入/输出防护规则列表
+- [`handoff_input_filter`][agents.run.RunConfig.handoff_input_filter]：应用于所有交接的全局输入过滤器（当交接操作本身未设置过滤器时）。该过滤器允许您编辑传递给新智能体的输入参数，详见[`Handoff.input_filter`][agents.handoffs.Handoff.input_filter]文档
+- [`tracing_disabled`][agents.run.RunConfig.tracing_disabled]：禁用整个运行的[追踪功能](tracing.md)
+- [`trace_include_sensitive_data`][agents.run.RunConfig.trace_include_sensitive_data]：配置追踪记录是否包含敏感数据（如大模型和工具调用的输入/输出）
+- [`workflow_name`][agents.run.RunConfig.workflow_name], [`trace_id`][agents.run.RunConfig.trace_id], [`group_id`][agents.run.RunConfig.group_id]：设置运行的追踪工作流名称、追踪ID和追踪组ID。建议至少设置`workflow_name`。组ID为可选字段，用于关联多个运行的追踪记录
+- [`trace_metadata`][agents.run.RunConfig.trace_metadata]：要包含在所有追踪记录中的元数据
 
--   [`model`][agents.run.RunConfig.model]: Allows setting a global LLM model to use, irrespective of what `model` each Agent has.
--   [`model_provider`][agents.run.RunConfig.model_provider]: A model provider for looking up model names, which defaults to OpenAI.
--   [`model_settings`][agents.run.RunConfig.model_settings]: Overrides agent-specific settings. For example, you can set a global `temperature` or `top_p`.
--   [`input_guardrails`][agents.run.RunConfig.input_guardrails], [`output_guardrails`][agents.run.RunConfig.output_guardrails]: A list of input or output guardrails to include on all runs.
--   [`handoff_input_filter`][agents.run.RunConfig.handoff_input_filter]: A global input filter to apply to all handoffs, if the handoff doesn't already have one. The input filter allows you to edit the inputs that are sent to the new agent. See the documentation in [`Handoff.input_filter`][agents.handoffs.Handoff.input_filter] for more details.
--   [`tracing_disabled`][agents.run.RunConfig.tracing_disabled]: Allows you to disable [tracing](tracing.md) for the entire run.
--   [`trace_include_sensitive_data`][agents.run.RunConfig.trace_include_sensitive_data]: Configures whether traces will include potentially sensitive data, such as LLM and tool call inputs/outputs.
--   [`workflow_name`][agents.run.RunConfig.workflow_name], [`trace_id`][agents.run.RunConfig.trace_id], [`group_id`][agents.run.RunConfig.group_id]: Sets the tracing workflow name, trace ID and trace group ID for the run. We recommend at least setting `workflow_name`. The group ID is an optional field that lets you link traces across multiple runs.
--   [`trace_metadata`][agents.run.RunConfig.trace_metadata]: Metadata to include on all traces.
+## 对话/聊天线程
 
-## Conversations/chat threads
+调用任何运行方法都可能涉及一个或多个智能体的执行（即多次大模型调用），但代表的是聊天对话中的单个逻辑轮次。例如：
 
-Calling any of the run methods can result in one or more agents running (and hence one or more LLM calls), but it represents a single logical turn in a chat conversation. For example:
+1. 用户轮次：用户输入文本
+2. 运行器执行：第一个智能体调用大模型→执行工具→交接给第二个智能体→第二个智能体执行更多工具→最终生成输出
 
-1. User turn: user enter text
-2. Runner run: first agent calls LLM, runs tools, does a handoff to a second agent, second agent runs more tools, and then produces an output.
+在智能体运行结束后，您可以选择向用户展示的内容。例如可以展示智能体生成的每个新条目，或仅显示最终输出。无论采用哪种方式，用户都可能提出后续问题，此时您可以再次调用运行方法。
 
-At the end of the agent run, you can choose what to show to the user. For example, you might show the user every new item generated by the agents, or just the final output. Either way, the user might then ask a followup question, in which case you can call the run method again.
-
-You can use the base [`RunResultBase.to_input_list()`][agents.result.RunResultBase.to_input_list] method to get the inputs for the next turn.
+使用基础方法[`RunResultBase.to_input_list()`][agents.result.RunResultBase.to_input_list]可获取下一轮次的输入参数。
 
 ```python
 async def main():
@@ -84,12 +83,12 @@ async def main():
         # California
 ```
 
-## Exceptions
+## 异常处理
 
-The SDK raises exceptions in certain cases. The full list is in [`agents.exceptions`][]. As an overview:
+SDK在特定情况下会抛出异常，完整列表见[`agents.exceptions`][]。主要包含：
 
--   [`AgentsException`][agents.exceptions.AgentsException] is the base class for all exceptions raised in the SDK.
--   [`MaxTurnsExceeded`][agents.exceptions.MaxTurnsExceeded] is raised when the run exceeds the `max_turns` passed to the run methods.
--   [`ModelBehaviorError`][agents.exceptions.ModelBehaviorError] is raised when the model produces invalid outputs, e.g. malformed JSON or using non-existent tools.
--   [`UserError`][agents.exceptions.UserError] is raised when you (the person writing code using the SDK) make an error using the SDK.
--   [`InputGuardrailTripwireTriggered`][agents.exceptions.InputGuardrailTripwireTriggered], [`OutputGuardrailTripwireTriggered`][agents.exceptions.OutputGuardrailTripwireTriggered] is raised when a [guardrail](guardrails.md) is tripped.
+- [`AgentsException`][agents.exceptions.AgentsException]：SDK所有异常的基类
+- [`MaxTurnsExceeded`][agents.exceptions.MaxTurnsExceeded]：当运行超过run方法传入的`max_turns`时抛出
+- [`ModelBehaviorError`][agents.exceptions.ModelBehaviorError]：当大模型产生无效输出时抛出（如格式错误的JSON或调用不存在的工具）
+- [`UserError`][agents.exceptions.UserError]：当SDK使用者编码错误时抛出
+- [`InputGuardrailTripwireTriggered`][agents.exceptions.InputGuardrailTripwireTriggered], [`OutputGuardrailTripwireTriggered`][agents.exceptions.OutputGuardrailTripwireTriggered]：当触发[防护规则](guardrails.md)时抛出

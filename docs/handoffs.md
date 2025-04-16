@@ -1,18 +1,18 @@
-# Handoffs
+# 任务转交
 
-Handoffs allow an agent to delegate tasks to another agent. This is particularly useful in scenarios where different agents specialize in distinct areas. For example, a customer support app might have agents that each specifically handle tasks like order status, refunds, FAQs, etc.
+任务转交功能允许一个智能体将任务委托给另一个智能体。这在各智能体专攻不同领域的场景中尤为实用。例如，客户支持应用可能配置了分别处理订单状态、退款、常见问题等专项任务的智能体。
 
-Handoffs are represented as tools to the LLM. So if there's a handoff to an agent named `Refund Agent`, the tool would be called `transfer_to_refund_agent`.
+对大模型而言，任务转交以工具形式呈现。若存在向名为`Refund Agent`智能体的转交，对应工具将被命名为`transfer_to_refund_agent`。
 
-## Creating a handoff
+## 创建任务转交
 
-All agents have a [`handoffs`][agents.agent.Agent.handoffs] param, which can either take an `Agent` directly, or a `Handoff` object that customizes the Handoff.
+所有智能体都具备[`handoffs`][agents.agent.Agent.handoffs]参数，该参数可直接接收`Agent`，或接受用于定制转交行为的`Handoff`对象。
 
-You can create a handoff using the [`handoff()`][agents.handoffs.handoff] function provided by the Agents SDK. This function allows you to specify the agent to hand off to, along with optional overrides and input filters.
+您可通过Agents SDK提供的[`handoff()`][agents.handoffs.handoff]函数创建转交。此函数支持指定目标智能体，并可选择性地配置覆盖参数和输入过滤器。
 
-### Basic Usage
+### 基础用法
 
-Here's how you can create a simple handoff:
+以下是创建简单转交的方法：
 
 ```python
 from agents import Agent, handoff
@@ -24,18 +24,18 @@ refund_agent = Agent(name="Refund agent")
 triage_agent = Agent(name="Triage agent", handoffs=[billing_agent, handoff(refund_agent)])
 ```
 
-1. You can use the agent directly (as in `billing_agent`), or you can use the `handoff()` function.
+1. 您可以直接使用智能体（如`billing_agent`所示），亦可选用`handoff()`函数。
 
-### Customizing handoffs via the `handoff()` function
+### 通过`handoff()`函数定制转交
 
-The [`handoff()`][agents.handoffs.handoff] function lets you customize things.
+[`handoff()`][agents.handoffs.handoff]函数支持以下定制项：
 
--   `agent`: This is the agent to which things will be handed off.
--   `tool_name_override`: By default, the `Handoff.default_tool_name()` function is used, which resolves to `transfer_to_<agent_name>`. You can override this.
--   `tool_description_override`: Override the default tool description from `Handoff.default_tool_description()`
--   `on_handoff`: A callback function executed when the handoff is invoked. This is useful for things like kicking off some data fetching as soon as you know a handoff is being invoked. This function receives the agent context, and can optionally also receive LLM generated input. The input data is controlled by the `input_type` param.
--   `input_type`: The type of input expected by the handoff (optional).
--   `input_filter`: This lets you filter the input received by the next agent. See below for more.
+-   `agent`：指定接收转交的目标智能体
+-   `tool_name_override`：默认使用`Handoff.default_tool_name()`函数（解析结果为`transfer_to_<agent_name>`），可在此处覆盖
+-   `tool_description_override`：覆盖`Handoff.default_tool_description()`提供的默认工具描述
+-   `on_handoff`：转交触发时执行的回调函数，适用于在确认转交后立即启动数据获取等场景。该函数接收智能体上下文，并可选择性接收大模型生成的输入（输入数据类型由`input_type`参数控制）
+-   `input_type`：指定转交预期的输入类型（可选）
+-   `input_filter`：用于过滤后续智能体接收的输入（详见下文）
 
 ```python
 from agents import Agent, handoff, RunContextWrapper
@@ -53,9 +53,9 @@ handoff_obj = handoff(
 )
 ```
 
-## Handoff inputs
+## 转交输入
 
-In certain situations, you want the LLM to provide some data when it calls a handoff. For example, imagine a handoff to an "Escalation agent". You might want a reason to be provided, so you can log it.
+某些场景下，您可能希望大模型在调用转交时提供特定数据。例如向"升级专员"转交任务时，可能需要附带转交原因以便记录。
 
 ```python
 from pydantic import BaseModel
@@ -77,11 +77,11 @@ handoff_obj = handoff(
 )
 ```
 
-## Input filters
+## 输入过滤器
 
-When a handoff occurs, it's as though the new agent takes over the conversation, and gets to see the entire previous conversation history. If you want to change this, you can set an [`input_filter`][agents.handoffs.Handoff.input_filter]. An input filter is a function that receives the existing input via a [`HandoffInputData`][agents.handoffs.HandoffInputData], and must return a new `HandoffInputData`.
+发生转交时，新智能体将接管整个对话历史。如需修改此行为，可设置[`input_filter`][agents.handoffs.Handoff.input_filter]。输入过滤器是接收[`HandoffInputData`][agents.handoffs.HandoffInputData]现有输入的函数，必须返回新的`HandoffInputData`。
 
-There are some common patterns (for example removing all tool calls from the history), which are implemented for you in [`agents.extensions.handoff_filters`][]
+[`agents.extensions.handoff_filters`][]中已实现若干通用模式（例如清除历史记录中的所有工具调用）：
 
 ```python
 from agents import Agent, handoff
@@ -95,11 +95,11 @@ handoff_obj = handoff(
 )
 ```
 
-1. This will automatically remove all tools from the history when `FAQ agent` is called.
+1. 当调用`FAQ agent`时，此配置将自动清除历史记录中的所有工具。
 
-## Recommended prompts
+## 推荐提示词
 
-To make sure that LLMs understand handoffs properly, we recommend including information about handoffs in your agents. We have a suggested prefix in [`agents.extensions.handoff_prompt.RECOMMENDED_PROMPT_PREFIX`][], or you can call [`agents.extensions.handoff_prompt.prompt_with_handoff_instructions`][] to automatically add recommended data to your prompts.
+为确保大模型正确理解转交机制，建议在智能体中包含转交说明。[`agents.extensions.handoff_prompt.RECOMMENDED_PROMPT_PREFIX`][]提供建议前缀模板，或调用[`agents.extensions.handoff_prompt.prompt_with_handoff_instructions`][]自动为提示词添加推荐内容。
 
 ```python
 from agents import Agent

@@ -1,3 +1,3 @@
 # `Model settings`
 
-::: agents.model_settings
+::: 智能体模型设置

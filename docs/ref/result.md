@@ -1,3 +1,3 @@
 # `Results`
 
-::: agents.result
+::: 智能体处理结果

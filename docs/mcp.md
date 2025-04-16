@@ -1,21 +1,21 @@
-# Model context protocol (MCP)
+# 模型上下文协议（MCP）
 
-The [Model context protocol](https://modelcontextprotocol.io/introduction) (aka MCP) is a way to provide tools and context to the LLM. From the MCP docs:
+[模型上下文协议](https://modelcontextprotocol.io/introduction)（简称MCP）是一种为大模型提供工具和上下文的方法。根据MCP文档所述：
 
-> MCP is an open protocol that standardizes how applications provide context to LLMs. Think of MCP like a USB-C port for AI applications. Just as USB-C provides a standardized way to connect your devices to various peripherals and accessories, MCP provides a standardized way to connect AI models to different data sources and tools.
+> MCP是一个开放协议，它标准化了应用程序如何向大模型提供上下文。可以将MCP视为AI应用的USB-C接口——正如USB-C为设备连接各种外设提供了标准化方案，MCP则为AI模型连接不同数据源和工具提供了标准化方式。
 
-The Agents SDK has support for MCP. This enables you to use a wide range of MCP servers to provide tools to your Agents.
+Agents SDK现已支持MCP协议。这意味着您可以使用各类MCP服务器来为智能体提供工具支持。
 
-## MCP servers
+## MCP服务器类型
 
-Currently, the MCP spec defines two kinds of servers, based on the transport mechanism they use:
+当前MCP规范根据传输机制定义了两类服务器：
 
-1. **stdio** servers run as a subprocess of your application. You can think of them as running "locally".
-2. **HTTP over SSE** servers run remotely. You connect to them via a URL.
+1. **stdio**服务器作为应用程序的子进程运行，可视为"本地"运行模式
+2. **HTTP over SSE**服务器以远程方式运行，需通过URL进行连接
 
-You can use the [`MCPServerStdio`][agents.mcp.server.MCPServerStdio] and [`MCPServerSse`][agents.mcp.server.MCPServerSse] classes to connect to these servers.
+您可以使用[`MCPServerStdio`][agents.mcp.server.MCPServerStdio]和[`MCPServerSse`][agents.mcp.server.MCPServerSse]类来连接这些服务器。
 
-For example, this is how you'd use the [official MCP filesystem server](https://www.npmjs.com/package/@modelcontextprotocol/server-filesystem).
+例如，以下是使用[官方MCP文件系统服务器](https://www.npmjs.com/package/@modelcontextprotocol/server-filesystem)的示例：
 
 ```python
 async with MCPServerStdio(
@@ -27,9 +27,9 @@ async with MCPServerStdio(
     tools = await server.list_tools()
 ```
 
-## Using MCP servers
+## MCP服务器使用指南
 
-MCP servers can be added to Agents. The Agents SDK will call `list_tools()` on the MCP servers each time the Agent is run. This makes the LLM aware of the MCP server's tools. When the LLM calls a tool from an MCP server, the SDK calls `call_tool()` on that server.
+MCP服务器可被添加到智能体中。每次运行智能体时，Agents SDK都会调用MCP服务器的`list_tools()`方法，使大模型感知该服务器提供的工具。当大模型调用MCP服务器的工具时，SDK会触发该服务器的`call_tool()`方法。
 
 ```python
 
@@ -40,21 +40,20 @@ agent=Agent(
 )
 ```
 
-## Caching
+## 缓存机制
 
-Every time an Agent runs, it calls `list_tools()` on the MCP server. This can be a latency hit, especially if the server is a remote server. To automatically cache the list of tools, you can pass `cache_tools_list=True` to both [`MCPServerStdio`][agents.mcp.server.MCPServerStdio] and [`MCPServerSse`][agents.mcp.server.MCPServerSse]. You should only do this if you're certain the tool list will not change.
+每次智能体运行时都会调用MCP服务器的`list_tools()`方法，这可能产生延迟（特别是远程服务器）。如需自动缓存工具列表，可向[`MCPServerStdio`][agents.mcp.server.MCPServerStdio]和[`MCPServerSse`][agents.mcp.server.MCPServerSse]传递`cache_tools_list=True`参数，但请仅在确定工具列表不会变更时使用此功能。
 
-If you want to invalidate the cache, you can call `invalidate_tools_cache()` on the servers.
+如需清除缓存，可调用服务器的`invalidate_tools_cache()`方法。
 
-## End-to-end examples
+## 端到端示例
 
-View complete working examples at [examples/mcp](https://github.com/openai/openai-agents-python/tree/main/examples/mcp).
+完整示例请参阅[examples/mcp](https://github.com/openai/openai-agents-python/tree/main/examples/mcp)目录。
 
-## Tracing
+## 追踪功能
 
-[Tracing](./tracing.md) automatically captures MCP operations, including:
-
-1. Calls to the MCP server to list tools
-2. MCP-related info on function calls
+[追踪系统](./tracing.md)会自动捕获以下MCP操作：
+1. 调用MCP服务器列举工具的过程
+2. 函数调用中与MCP相关的信息
 
 ![MCP Tracing Screenshot](./assets/images/mcp-tracing.jpg)

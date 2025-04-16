@@ -1,14 +1,14 @@
-# Agents
+# 智能体（Agents）
 
-Agents are the core building block in your apps. An agent is a large language model (LLM), configured with instructions and tools.
+智能体是应用程序中的核心构建模块。一个智能体就是一个配置了指令和工具的大模型（LLM）。
 
-## Basic configuration
+## 基础配置
 
-The most common properties of an agent you'll configure are:
+智能体最常配置的属性包括：
 
--   `instructions`: also known as a developer message or system prompt.
--   `model`: which LLM to use, and optional `model_settings` to configure model tuning parameters like temperature, top_p, etc.
--   `tools`: Tools that the agent can use to achieve its tasks.
+-   `instructions`：也称为开发者消息或系统提示词
+-   `model`：指定使用的LLM模型，以及可选的`model_settings`来配置模型调优参数（如temperature、top_p等）
+-   `tools`：智能体用于完成任务的各种工具
 
 ```python
 from agents import Agent, ModelSettings, function_tool
@@ -25,9 +25,9 @@ agent = Agent(
 )
 ```
 
-## Context
+## 上下文机制
 
-Agents are generic on their `context` type. Context is a dependency-injection tool: it's an object you create and pass to `Runner.run()`, that is passed to every agent, tool, handoff etc, and it serves as a grab bag of dependencies and state for the agent run. You can provide any Python object as the context.
+智能体采用泛型设计处理`context`类型。上下文是一种依赖注入工具：由您创建并传递给`Runner.run()`的对象，会传递到每个智能体、工具和交接流程中，作为智能体运行的依赖项和状态集合。您可以将任何Python对象作为上下文提供。
 
 ```python
 @dataclass
@@ -43,9 +43,9 @@ agent = Agent[UserContext](
 )
 ```
 
-## Output types
+## 输出类型
 
-By default, agents produce plain text (i.e. `str`) outputs. If you want the agent to produce a particular type of output, you can use the `output_type` parameter. A common choice is to use [Pydantic](https://docs.pydantic.dev/) objects, but we support any type that can be wrapped in a Pydantic [TypeAdapter](https://docs.pydantic.dev/latest/api/type_adapter/) - dataclasses, lists, TypedDict, etc.
+默认情况下，智能体生成纯文本（即`str`）输出。如需指定输出类型，可使用`output_type`参数。常见选择是使用[Pydantic](https://docs.pydantic.dev/)对象，但我们支持任何能被Pydantic的[TypeAdapter](https://docs.pydantic.dev/latest/api/type_adapter/)封装的数据类型——包括数据类、列表、TypedDict等。
 
 ```python
 from pydantic import BaseModel
@@ -64,13 +64,12 @@ agent = Agent(
 )
 ```
 
-!!! note
+!!! 注意  
+    当传入`output_type`时，模型将使用[结构化输出](https://platform.openai.com/docs/guides/structured-outputs)而非常规的纯文本响应。
 
-    When you pass an `output_type`, that tells the model to use [structured outputs](https://platform.openai.com/docs/guides/structured-outputs) instead of regular plain text responses.
+## 任务交接
 
-## Handoffs
-
-Handoffs are sub-agents that the agent can delegate to. You provide a list of handoffs, and the agent can choose to delegate to them if relevant. This is a powerful pattern that allows orchestrating modular, specialized agents that excel at a single task. Read more in the [handoffs](handoffs.md) documentation.
+交接流程是指智能体可以委派执行的子智能体。您提供交接列表后，智能体可在适当时选择委派执行。这种强大模式能协调模块化的专业智能体，每个智能体专精于单一任务。详见[交接流程](handoffs.md)文档。
 
 ```python
 from agents import Agent
@@ -89,9 +88,9 @@ triage_agent = Agent(
 )
 ```
 
-## Dynamic instructions
+## 动态指令
 
-In most cases, you can provide instructions when you create the agent. However, you can also provide dynamic instructions via a function. The function will receive the agent and context, and must return the prompt. Both regular and `async` functions are accepted.
+多数情况下，您可以在创建智能体时提供指令。但也可以通过函数提供动态指令——该函数接收智能体和上下文参数，必须返回提示词内容。支持常规函数和`async`函数。
 
 ```python
 def dynamic_instructions(
@@ -106,17 +105,17 @@ agent = Agent[UserContext](
 )
 ```
 
-## Lifecycle events (hooks)
+## 生命周期事件（钩子）
 
-Sometimes, you want to observe the lifecycle of an agent. For example, you may want to log events, or pre-fetch data when certain events occur. You can hook into the agent lifecycle with the `hooks` property. Subclass the [`AgentHooks`][agents.lifecycle.AgentHooks] class, and override the methods you're interested in.
+有时需要观察智能体的生命周期。例如记录事件日志，或在特定事件发生时预取数据。您可以通过`hooks`属性挂接智能体生命周期。继承[`AgentHooks`][agents.lifecycle.AgentHooks]类并重写相关方法即可实现。
 
-## Guardrails
+## 防护机制
 
-Guardrails allow you to run checks/validations on user input, in parallel to the agent running. For example, you could screen the user's input for relevance. Read more in the [guardrails](guardrails.md) documentation.
+防护机制允许在智能体运行的同时对用户输入进行检查/验证。例如筛查用户输入的相关性。详见[防护机制](guardrails.md)文档。
 
-## Cloning/copying agents
+## 克隆/复制智能体
 
-By using the `clone()` method on an agent, you can duplicate an Agent, and optionally change any properties you like.
+通过智能体的`clone()`方法，可以复制智能体并选择性修改任意属性。
 
 ```python
 pirate_agent = Agent(
@@ -131,17 +130,16 @@ robot_agent = pirate_agent.clone(
 )
 ```
 
-## Forcing tool use
+## 强制工具调用
 
-Supplying a list of tools doesn't always mean the LLM will use a tool. You can force tool use by setting [`ModelSettings.tool_choice`][agents.model_settings.ModelSettings.tool_choice]. Valid values are:
+提供工具列表并不保证LLM会调用工具。您可以通过设置[`ModelSettings.tool_choice`][agents.model_settings.ModelSettings.tool_choice]强制调用，可选值包括：
 
-1. `auto`, which allows the LLM to decide whether or not to use a tool.
-2. `required`, which requires the LLM to use a tool (but it can intelligently decide which tool).
-3. `none`, which requires the LLM to _not_ use a tool.
-4. Setting a specific string e.g. `my_tool`, which requires the LLM to use that specific tool.
+1. `auto`：允许LLM自主决定是否调用工具
+2. `required`：要求LLM必须调用工具（但可智能选择具体工具）
+3. `none`：要求LLM不得调用工具
+4. 指定具体字符串如`my_tool`：要求LLM必须调用特定工具
 
-!!! note
+!!! 注意  
+    为防止无限循环，框架在工具调用后会自动将`tool_choice`重置为"auto"。此行为可通过[`agent.reset_tool_choice`][agents.agent.Agent.reset_tool_choice]配置。无限循环的成因是：工具结果会传回LLM，而由于`tool_choice`设置，LLM可能再次生成工具调用，如此循环往复。
 
-    To prevent infinite loops, the framework automatically resets `tool_choice` to "auto" after a tool call. This behavior is configurable via [`agent.reset_tool_choice`][agents.agent.Agent.reset_tool_choice]. The infinite loop is because tool results are sent to the LLM, which then generates another tool call because of `tool_choice`, ad infinitum.
-
-    If you want the Agent to completely stop after a tool call (rather than continuing with auto mode), you can set [`Agent.tool_use_behavior="stop_on_first_tool"`] which will directly use the tool output as the final response without further LLM processing.
+    如果希望智能体在工具调用后完全停止（而不是继续以auto模式运行），可设置[`Agent.tool_use_behavior="stop_on_first_tool"`]，这将直接把工具输出作为最终响应，不再进行后续LLM处理。

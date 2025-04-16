@@ -1,8 +1,8 @@
-# Quickstart
+# 快速入门
 
-## Create a project and virtual environment
+## 创建项目与虚拟环境
 
-You'll only need to do this once.
+此步骤只需执行一次。
 
 ```bash
 mkdir my_project
@@ -10,31 +10,31 @@ cd my_project
 python -m venv .venv
 ```
 
-### Activate the virtual environment
+### 激活虚拟环境
 
-Do this every time you start a new terminal session.
+每次开启新的终端会话时都需要执行此操作。
 
 ```bash
 source .venv/bin/activate
 ```
 
-### Install the Agents SDK
+### 安装 Agents SDK
 
 ```bash
 pip install openai-agents # or `uv add openai-agents`, etc
 ```
 
-### Set an OpenAI API key
+### 设置OpenAI API密钥
 
-If you don't have one, follow [these instructions](https://platform.openai.com/docs/quickstart#create-and-export-an-api-key) to create an OpenAI API key.
+若尚未获取密钥，请按照[此指南](https://platform.openai.com/docs/quickstart#create-and-export-an-api-key)创建OpenAI API密钥。
 
 ```bash
 export OPENAI_API_KEY=sk-...
 ```
 
-## Create your first agent
+## 创建首个智能体
 
-Agents are defined with instructions, a name, and optional config (such as `model_config`)
+智能体通过指令、名称及可选配置（如`model_config`）进行定义
 
 ```python
 from agents import Agent
@@ -45,9 +45,9 @@ agent = Agent(
 )
 ```
 
-## Add a few more agents
+## 添加更多智能体
 
-Additional agents can be defined in the same way. `handoff_descriptions` provide additional context for determining handoff routing
+其他智能体可采用相同方式定义。`handoff_descriptions`可为转交路由决策提供额外上下文
 
 ```python
 from agents import Agent
@@ -65,9 +65,9 @@ math_tutor_agent = Agent(
 )
 ```
 
-## Define your handoffs
+## 定义转交规则
 
-On each agent, you can define an inventory of outgoing handoff options that the agent can choose from to decide how to make progress on their task.
+在每个智能体上，您可以配置转交选项清单，智能体将据此选择任务推进方式。
 
 ```python
 triage_agent = Agent(
@@ -77,9 +77,9 @@ triage_agent = Agent(
 )
 ```
 
-## Run the agent orchestration
+## 运行智能体编排
 
-Let's check that the workflow runs and the triage agent correctly routes between the two specialist agents.
+现在验证工作流是否正常执行，且分诊智能体能否正确在两个专业智能体间路由。
 
 ```python
 from agents import Runner
@@ -89,9 +89,9 @@ async def main():
     print(result.final_output)
 ```
 
-## Add a guardrail
+## 添加防护栏
 
-You can define custom guardrails to run on the input or output.
+您可以为输入或输出定义自定义防护栏。
 
 ```python
 from agents import GuardrailFunctionOutput, Agent, Runner
@@ -116,9 +116,9 @@ async def homework_guardrail(ctx, agent, input_data):
     )
 ```
 
-## Put it all together
+## 完整流程集成
 
-Let's put it all together and run the entire workflow, using handoffs and the input guardrail.
+现在将所有组件集成起来，使用转交机制和输入防护栏运行完整工作流。
 
 ```python
 from agents import Agent, InputGuardrail, GuardrailFunctionOutput, Runner
@@ -176,14 +176,14 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## View your traces
+## 查看运行轨迹
 
-To review what happened during your agent run, navigate to the [Trace viewer in the OpenAI Dashboard](https://platform.openai.com/traces) to view traces of your agent runs.
+要审查智能体运行过程，请访问[OpenAI仪表盘中的轨迹查看器](https://platform.openai.com/traces)查看运行记录。
 
-## Next steps
+## 后续步骤
 
-Learn how to build more complex agentic flows:
+学习如何构建更复杂的智能体流程：
 
--   Learn about how to configure [Agents](agents.md).
--   Learn about [running agents](running_agents.md).
--   Learn about [tools](tools.md), [guardrails](guardrails.md) and [models](models.md).
+-   了解如何配置[智能体](agents.md)
+-   掌握[运行智能体](running_agents.md)的方法
+-   学习[工具](tools.md)、[防护栏](guardrails.md)和[模型](models.md)的使用

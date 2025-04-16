@@ -1,42 +1,37 @@
-# Examples
+# 示例代码
 
-Check out a variety of sample implementations of the SDK in the examples section of the [repo](https://github.com/openai/openai-agents-python/tree/main/examples). The examples are organized into several categories that demonstrate different patterns and capabilities.
+请查看[代码仓库](https://github.com/openai/openai-agents-python/tree/main/examples)示例部分中提供的多种SDK实现范例。这些示例按不同功能类别进行组织，展示了各种开发模式和技术能力。
 
+## 分类目录
 
-## Categories
+- **[agent_patterns](https://github.com/openai/openai-agents-python/tree/main/examples/agent_patterns):**  
+  本类别示例演示了常见的智能体设计模式，例如：
+    - 确定性工作流
+    - 将智能体作为工具使用
+    - 并行智能体执行
 
-- **[agent_patterns](https://github.com/openai/openai-agents-python/tree/main/examples/agent_patterns):**
-  Examples in this category illustrate common agent design patterns, such as
+- **[basic](https://github.com/openai/openai-agents-python/tree/main/examples/basic):**  
+  这些示例展示了SDK的基础功能，包括：
+    - 动态系统提示词
+    - 流式输出
+    - 生命周期事件
 
-    - Deterministic workflows
-    - Agents as tools
-    - Parallel agent execution
+- **[tool examples](https://github.com/openai/openai-agents-python/tree/main/examples/tools):**  
+  学习如何实现OAI托管工具（如网页搜索和文件搜索），并将其集成到智能体中。
 
-- **[basic](https://github.com/openai/openai-agents-python/tree/main/examples/basic):**
-  These examples showcase foundational capabilities of the SDK, such as
+- **[model providers](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers):**  
+  探索如何通过SDK使用非OpenAI的大模型。
 
-    - Dynamic system prompts
-    - Streaming outputs
-    - Lifecycle events
+- **[handoffs](https://github.com/openai/openai-agents-python/tree/main/examples/handoffs):**  
+  查看智能体任务交接的实际案例。
 
-- **[tool examples](https://github.com/openai/openai-agents-python/tree/main/examples/tools):**
-  Learn how to implement OAI hosted tools such as web search and file search,
-   and integrate them into your agents.
+- **[mcp](https://github.com/openai/openai-agents-python/tree/main/examples/mcp):**  
+  学习如何使用MCP构建智能体。
 
-- **[model providers](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers):**
-  Explore how to use non-OpenAI models with the SDK.
+- **[customer_service](https://github.com/openai/openai-agents-python/tree/main/examples/customer_service)** 和 **[research_bot](https://github.com/openai/openai-agents-python/tree/main/examples/research_bot):**  
+  两个完整案例展示实际应用场景：
+    - **customer_service**: 航空公司客户服务系统示例
+    - **research_bot**: 简易深度研究机器人复刻版
 
-- **[handoffs](https://github.com/openai/openai-agents-python/tree/main/examples/handoffs):**
-  See practical examples of agent handoffs.
-
-- **[mcp](https://github.com/openai/openai-agents-python/tree/main/examples/mcp):**
-  Learn how to build agents with MCP.
-
-- **[customer_service](https://github.com/openai/openai-agents-python/tree/main/examples/customer_service)** and **[research_bot](https://github.com/openai/openai-agents-python/tree/main/examples/research_bot):**
-  Two more built-out examples that illustrate real-world applications
-
-    - **customer_service**: Example customer service system for an airline.
-    - **research_bot**: Simple deep research clone.
-
-- **[voice](https://github.com/openai/openai-agents-python/tree/main/examples/voice):**
-  See examples of voice agents, using our TTS and STT models.
+- **[voice](https://github.com/openai/openai-agents-python/tree/main/examples/voice):**  
+  查看语音智能体示例（使用我们的TTS和STT模型）。

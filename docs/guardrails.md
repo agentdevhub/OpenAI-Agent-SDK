@@ -1,43 +1,41 @@
-# Guardrails
+# 防护机制
 
-Guardrails run _in parallel_ to your agents, enabling you to do checks and validations of user input. For example, imagine you have an agent that uses a very smart (and hence slow/expensive) model to help with customer requests. You wouldn't want malicious users to ask the model to help them with their math homework. So, you can run a guardrail with a fast/cheap model. If the guardrail detects malicious usage, it can immediately raise an error, which stops the expensive model from running and saves you time/money.
+防护机制与您的智能体_并行运行_，使您能够对用户输入进行检查和验证。例如，假设您有一个使用非常智能（因此速度慢/成本高）的大模型来处理客户请求的智能体。您肯定不希望恶意用户要求该模型帮他们解答数学作业。这时，您可以通过一个快速/廉价的模型运行防护机制。如果防护机制检测到恶意使用行为，它可以立即触发错误，从而阻止昂贵模型的运行，为您节省时间和成本。
 
-There are two kinds of guardrails:
+防护机制分为两种类型：
 
-1. Input guardrails run on the initial user input
-2. Output guardrails run on the final agent output
+1. 输入防护机制：在初始用户输入时运行
+2. 输出防护机制：在最终智能体输出时运行
 
-## Input guardrails
+## 输入防护机制
 
-Input guardrails run in 3 steps:
+输入防护机制分三步运行：
 
-1. First, the guardrail receives the same input passed to the agent.
-2. Next, the guardrail function runs to produce a [`GuardrailFunctionOutput`][agents.guardrail.GuardrailFunctionOutput], which is then wrapped in an [`InputGuardrailResult`][agents.guardrail.InputGuardrailResult]
-3. Finally, we check if [`.tripwire_triggered`][agents.guardrail.GuardrailFunctionOutput.tripwire_triggered] is true. If true, an [`InputGuardrailTripwireTriggered`][agents.exceptions.InputGuardrailTripwireTriggered] exception is raised, so you can appropriately respond to the user or handle the exception.
+1. 首先，防护机制接收与传递给智能体相同的输入
+2. 接着，防护函数运行并生成一个[`GuardrailFunctionOutput`][agents.guardrail.GuardrailFunctionOutput]，随后被封装到[`InputGuardrailResult`][agents.guardrail.InputGuardrailResult]中
+3. 最后，我们检查[`.tripwire_triggered`][agents.guardrail.GuardrailFunctionOutput.tripwire_triggered]是否为true。如果为true，则触发[`InputGuardrailTripwireTriggered`][agents.exceptions.InputGuardrailTripwireTriggered]异常，以便您能适应用户或处理异常
 
-!!! Note
+!!! 注意  
+    输入防护机制设计用于处理用户输入，因此只有当智能体是_第一个_智能体时才会运行其防护机制。您可能会疑惑，为什么`guardrails`属性设置在智能体上而不是传递给`Runner.run`？这是因为防护机制通常与实际智能体相关——不同的智能体会运行不同的防护机制，因此将代码放在一起有助于提高可读性。
 
-    Input guardrails are intended to run on user input, so an agent's guardrails only run if the agent is the *first* agent. You might wonder, why is the `guardrails` property on the agent instead of passed to `Runner.run`? It's because guardrails tend to be related to the actual Agent - you'd run different guardrails for different agents, so colocating the code is useful for readability.
+## 输出防护机制
 
-## Output guardrails
+输出防护机制分三步运行：
 
-Output guardrails run in 3 steps:
+1. 首先，防护机制接收与传递给智能体相同的输入
+2. 接着，防护函数运行并生成一个[`GuardrailFunctionOutput`][agents.guardrail.GuardrailFunctionOutput]，随后被封装到[`OutputGuardrailResult`][agents.guardrail.OutputGuardrailResult]中
+3. 最后，我们检查[`.tripwire_triggered`][agents.guardrail.GuardrailFunctionOutput.tripwire_triggered]是否为true。如果为true，则触发[`OutputGuardrailTripwireTriggered`][agents.exceptions.OutputGuardrailTripwireTriggered]异常，以便您能适应用户或处理异常
 
-1. First, the guardrail receives the same input passed to the agent.
-2. Next, the guardrail function runs to produce a [`GuardrailFunctionOutput`][agents.guardrail.GuardrailFunctionOutput], which is then wrapped in an [`OutputGuardrailResult`][agents.guardrail.OutputGuardrailResult]
-3. Finally, we check if [`.tripwire_triggered`][agents.guardrail.GuardrailFunctionOutput.tripwire_triggered] is true. If true, an [`OutputGuardrailTripwireTriggered`][agents.exceptions.OutputGuardrailTripwireTriggered] exception is raised, so you can appropriately respond to the user or handle the exception.
+!!! 注意  
+    输出防护机制设计用于处理最终智能体输出，因此只有当智能体是_最后一个_智能体时才会运行其防护机制。与输入防护机制类似，我们这样做是因为防护机制通常与实际智能体相关——不同的智能体会运行不同的防护机制，因此将代码放在一起有助于提高可读性。
 
-!!! Note
+## 触发机制
 
-    Output guardrails are intended to run on the final agent output, so an agent's guardrails only run if the agent is the *last* agent. Similar to the input guardrails, we do this because guardrails tend to be related to the actual Agent - you'd run different guardrails for different agents, so colocating the code is useful for readability.
+如果输入或输出未通过防护机制检查，防护机制可以通过触发机制发出信号。一旦我们发现某个防护机制触发了触发机制，就会立即引发`{Input,Output}GuardrailTripwireTriggered`异常并停止智能体执行。
 
-## Tripwires
+## 实现防护机制
 
-If the input or output fails the guardrail, the Guardrail can signal this with a tripwire. As soon as we see a guardrail that has triggered the tripwires, we immediately raise a `{Input,Output}GuardrailTripwireTriggered` exception and halt the Agent execution.
-
-## Implementing a guardrail
-
-You need to provide a function that receives input, and returns a [`GuardrailFunctionOutput`][agents.guardrail.GuardrailFunctionOutput]. In this example, we'll do this by running an Agent under the hood.
+您需要提供一个接收输入并返回[`GuardrailFunctionOutput`][agents.guardrail.GuardrailFunctionOutput]的函数。在以下示例中，我们将通过底层运行一个智能体来实现这一点。
 
 ```python
 from pydantic import BaseModel
@@ -90,12 +88,12 @@ async def main():
         print("Math homework guardrail tripped")
 ```
 
-1. We'll use this agent in our guardrail function.
-2. This is the guardrail function that receives the agent's input/context, and returns the result.
-3. We can include extra information in the guardrail result.
-4. This is the actual agent that defines the workflow.
+1. 我们将在防护函数中使用此智能体
+2. 这是接收智能体输入/上下文并返回结果的防护函数
+3. 我们可以在防护结果中包含额外信息
+4. 这是定义工作流程的实际智能体
 
-Output guardrails are similar.
+输出防护机制的实现类似。
 
 ```python
 from pydantic import BaseModel
@@ -148,7 +146,7 @@ async def main():
         print("Math output guardrail tripped")
 ```
 
-1. This is the actual agent's output type.
-2. This is the guardrail's output type.
-3. This is the guardrail function that receives the agent's output, and returns the result.
-4. This is the actual agent that defines the workflow.
+1. 这是实际智能体的输出类型
+2. 这是防护机制的输出类型
+3. 这是接收智能体输出并返回结果的防护函数
+4. 这是定义工作流程的实际智能体

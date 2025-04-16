@@ -1,3 +1,3 @@
 # `OpenAI Responses model`
 
-::: agents.models.openai_responses
+::: 智能体模型中的OpenAI响应处理

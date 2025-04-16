@@ -1,18 +1,18 @@
-# Tools
+# 工具集
 
-Tools let agents take actions: things like fetching data, running code, calling external APIs, and even using a computer. There are three classes of tools in the Agent SDK:
+工具让智能体能够执行各类操作：包括获取数据、运行代码、调用外部API，甚至操作计算机。Agent SDK 提供三类工具：
 
--   Hosted tools: these run on LLM servers alongside the AI models. OpenAI offers retrieval, web search and computer use as hosted tools.
--   Function calling: these allow you to use any Python function as a tool.
--   Agents as tools: this allows you to use an agent as a tool, allowing Agents to call other agents without handing off to them.
+-   **托管工具**：这些工具与大模型一同运行在LLM服务器上。OpenAI提供的托管工具包括信息检索、网络搜索和计算机操作。
+-   **函数调用工具**：允许将任意Python函数转化为工具使用。
+-   **智能体工具化**：可将智能体作为工具调用，实现智能体间的相互调用而无需移交控制权。
 
-## Hosted tools
+## 托管工具
 
-OpenAI offers a few built-in tools when using the [`OpenAIResponsesModel`][agents.models.openai_responses.OpenAIResponsesModel]:
+使用[`OpenAIResponsesModel`][agents.models.openai_responses.OpenAIResponsesModel]时，OpenAI提供以下内置工具：
 
--   The [`WebSearchTool`][agents.tool.WebSearchTool] lets an agent search the web.
--   The [`FileSearchTool`][agents.tool.FileSearchTool] allows retrieving information from your OpenAI Vector Stores.
--   The [`ComputerTool`][agents.tool.ComputerTool] allows automating computer use tasks.
+-   [`WebSearchTool`][agents.tool.WebSearchTool]：支持智能体执行网络搜索
+-   [`FileSearchTool`][agents.tool.FileSearchTool]：支持从OpenAI向量数据库检索信息
+-   [`ComputerTool`][agents.tool.ComputerTool]：支持自动化计算机操作任务
 
 ```python
 from agents import Agent, FileSearchTool, Runner, WebSearchTool
@@ -33,16 +33,16 @@ async def main():
     print(result.final_output)
 ```
 
-## Function tools
+## 函数工具
 
-You can use any Python function as a tool. The Agents SDK will setup the tool automatically:
+可将任意Python函数转化为工具，Agent SDK会自动完成工具配置：
 
--   The name of the tool will be the name of the Python function (or you can provide a name)
--   Tool description will be taken from the docstring of the function (or you can provide a description)
--   The schema for the function inputs is automatically created from the function's arguments
--   Descriptions for each input are taken from the docstring of the function, unless disabled
+-  工具名称默认使用函数名（支持自定义）
+-  工具描述自动取自函数文档字符串（支持自定义）
+-  根据函数参数自动生成输入参数结构
+-  各参数描述默认取自函数文档字符串（可禁用）
 
-We use Python's `inspect` module to extract the function signature, along with [`griffe`](https://mkdocstrings.github.io/griffe/) to parse docstrings and `pydantic` for schema creation.
+我们使用Python的`inspect`模块提取函数签名，配合[`griffe`](https://mkdocstrings.github.io/griffe/)解析文档字符串，以及`pydantic`生成参数结构。
 
 ```python
 import json
@@ -94,16 +94,16 @@ for tool in agent.tools:
 
 ```
 
-1.  You can use any Python types as arguments to your functions, and the function can be sync or async.
-2.  Docstrings, if present, are used to capture descriptions and argument descriptions
-3.  Functions can optionally take the `context` (must be the first argument). You can also set overrides, like the name of the tool, description, which docstring style to use, etc.
-4.  You can pass the decorated functions to the list of tools.
+1.  函数参数支持任意Python类型，函数本身支持同步/异步
+2.  若存在文档字符串，将自动提取工具描述和参数说明
+3.  函数可选择接收`context`参数（必须作为首个参数）。同时支持覆盖配置项，如工具名称、描述、文档字符串风格等
+4.  经装饰器处理的函数可直接传入工具列表
 
-??? note "Expand to see output"
+??? note "展开查看输出示例"
 
     ```
     fetch_weather
-    Fetch the weather for a given location.
+    获取指定位置的天气信息
     {
     "$defs": {
       "Location": {
@@ -128,7 +128,7 @@ for tool in agent.tools:
     "properties": {
       "location": {
         "$ref": "#/$defs/Location",
-        "description": "The location to fetch the weather for."
+        "description": "需要查询天气的地理位置"
       }
     },
     "required": [
@@ -139,11 +139,11 @@ for tool in agent.tools:
     }
 
     fetch_data
-    Read the contents of a file.
+    读取文件内容
     {
     "properties": {
       "path": {
-        "description": "The path to the file to read.",
+        "description": "待读取文件的路径",
         "title": "Path",
         "type": "string"
       },
@@ -157,7 +157,7 @@ for tool in agent.tools:
           }
         ],
         "default": null,
-        "description": "The directory to read the file from.",
+        "description": "文件所在目录",
         "title": "Directory"
       }
     },
@@ -169,14 +169,14 @@ for tool in agent.tools:
     }
     ```
 
-### Custom function tools
+### 自定义函数工具
 
-Sometimes, you don't want to use a Python function as a tool. You can directly create a [`FunctionTool`][agents.tool.FunctionTool] if you prefer. You'll need to provide:
+若不希望直接使用Python函数，可手动创建[`FunctionTool`][agents.tool.FunctionTool]，需提供以下要素：
 
 -   `name`
 -   `description`
--   `params_json_schema`, which is the JSON schema for the arguments
--   `on_invoke_tool`, which is an async function that receives the context and the arguments as a JSON string, and must return the tool output as a string.
+-   `params_json_schema`（参数的JSON结构定义）
+-   `on_invoke_tool`（异步执行函数，接收上下文和JSON格式参数，返回字符串格式结果）
 
 ```python
 from typing import Any
@@ -209,18 +209,18 @@ tool = FunctionTool(
 )
 ```
 
-### Automatic argument and docstring parsing
+### 自动参数与文档解析
 
-As mentioned before, we automatically parse the function signature to extract the schema for the tool, and we parse the docstring to extract descriptions for the tool and for individual arguments. Some notes on that:
+如前所述，系统会自动解析函数签名生成工具结构，并通过文档字符串提取描述信息。注意事项：
 
-1. The signature parsing is done via the `inspect` module. We use type annotations to understand the types for the arguments, and dynamically build a Pydantic model to represent the overall schema. It supports most types, including Python primitives, Pydantic models, TypedDicts, and more.
-2. We use `griffe` to parse docstrings. Supported docstring formats are `google`, `sphinx` and `numpy`. We attempt to automatically detect the docstring format, but this is best-effort and you can explicitly set it when calling `function_tool`. You can also disable docstring parsing by setting `use_docstring_info` to `False`.
+1. 签名解析通过`inspect`模块实现，利用类型注解推断参数类型，并动态构建Pydantic模型。支持Python原生类型、Pydantic模型、TypedDict等多种类型。
+2. 使用`griffe`解析文档字符串，支持`google`、`sphinx`和`numpy`格式。系统会自动检测格式（可能不准确），也可通过`function_tool`显式指定。设置`use_docstring_info`为`False`可禁用文档解析。
 
-The code for the schema extraction lives in [`agents.function_schema`][].
+结构提取代码详见[`agents.function_schema`][]。
 
-## Agents as tools
+## 智能体工具化
 
-In some workflows, you may want a central agent to orchestrate a network of specialized agents, instead of handing off control. You can do this by modeling agents as tools.
+在某些工作流中，可能需要中心智能体协调多个专业智能体（而非移交控制权）。此时可将智能体建模为工具使用。
 
 ```python
 from agents import Agent, Runner
@@ -259,12 +259,12 @@ async def main():
     print(result.final_output)
 ```
 
-## Handling errors in function tools
+## 函数工具错误处理
 
-When you create a function tool via `@function_tool`, you can pass a `failure_error_function`. This is a function that provides an error response to the LLM in case the tool call crashes.
+通过`@function_tool`创建函数工具时，可传入`failure_error_function`参数。该函数用于在工具调用失败时向大模型返回错误响应：
 
--   By default (i.e. if you don't pass anything), it runs a `default_tool_error_function` which tells the LLM an error occurred.
--   If you pass your own error function, it runs that instead, and sends the response to the LLM.
--   If you explicitly pass `None`, then any tool call errors will be re-raised for you to handle. This could be a `ModelBehaviorError` if the model produced invalid JSON, or a `UserError` if your code crashed, etc.
+-  默认情况下（未传参时），执行`default_tool_error_function`向大模型返回通用错误信息
+-  传入自定义函数时，将执行该函数并返回响应
+-  显式传入`None`时，所有工具调用错误将重新抛出。可能是模型生成无效JSON导致的`ModelBehaviorError`，或代码执行触发的`UserError`等
 
-If you are manually creating a `FunctionTool` object, then you must handle errors inside the `on_invoke_tool` function.
+若手动创建`FunctionTool`对象，则需在`on_invoke_tool`函数内自行处理错误。

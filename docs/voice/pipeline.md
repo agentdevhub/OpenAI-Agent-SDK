@@ -1,6 +1,6 @@
-# Pipelines and workflows
+# 管道与工作流
 
-[`VoicePipeline`][agents.voice.pipeline.VoicePipeline] is a class that makes it easy to turn your agentic workflows into a voice app. You pass in a workflow to run, and the pipeline takes care of transcribing input audio, detecting when the audio ends, calling your workflow at the right time, and turning the workflow output back into audio.
+[`VoicePipeline`][agents.voice.pipeline.VoicePipeline] 是一个可将智能体工作流快速转换为语音应用的类。您只需传入需要运行的工作流，该管道就会自动处理以下事项：输入音频转写、语音结束检测、在适当时机调用工作流，并将工作流输出重新转换为语音。
 
 ```mermaid
 graph LR
@@ -28,31 +28,31 @@ graph LR
 
 ```
 
-## Configuring a pipeline
+## 配置管道
 
-When you create a pipeline, you can set a few things:
+创建管道时，您可以设置以下内容：
 
-1. The [`workflow`][agents.voice.workflow.VoiceWorkflowBase], which is the code that runs each time new audio is transcribed.
-2. The [`speech-to-text`][agents.voice.model.STTModel] and [`text-to-speech`][agents.voice.model.TTSModel] models used
-3. The [`config`][agents.voice.pipeline_config.VoicePipelineConfig], which lets you configure things like:
-    - A model provider, which can map model names to models
-    - Tracing, including whether to disable tracing, whether audio files are uploaded, the workflow name, trace IDs etc.
-    - Settings on the TTS and STT models, like the prompt, language and data types used.
+1. [`workflow`][agents.voice.workflow.VoiceWorkflowBase]：每次新音频转写时运行的代码
+2. 使用的 [`speech-to-text`][agents.voice.model.STTModel] 和 [`text-to-speech`][agents.voice.model.TTSModel] 模型
+3. [`config`][agents.voice.pipeline_config.VoicePipelineConfig]：可配置以下内容：
+    - 模型提供者（可将模型名称映射到具体模型）
+    - 追踪设置（包括是否禁用追踪、是否上传音频文件、工作流名称、追踪ID等）
+    - TTS和STT模型的相关设置（如提示词、语言和使用的数据类型）
 
-## Running a pipeline
+## 运行管道
 
-You can run a pipeline via the [`run()`][agents.voice.pipeline.VoicePipeline.run] method, which lets you pass in audio input in two forms:
+通过 [`run()`][agents.voice.pipeline.VoicePipeline.run] 方法运行管道时，支持两种音频输入形式：
 
-1. [`AudioInput`][agents.voice.input.AudioInput] is used when you have a full audio transcript, and just want to produce a result for it. This is useful in cases where you don't need to detect when a speaker is done speaking; for example, when you have pre-recorded audio or in push-to-talk apps where it's clear when the user is done speaking.
-2. [`StreamedAudioInput`][agents.voice.input.StreamedAudioInput] is used when you might need to detect when a user is done speaking. It allows you to push audio chunks as they are detected, and the voice pipeline will automatically run the agent workflow at the right time, via a process called "activity detection".
+1. [`AudioInput`][agents.voice.input.AudioInput]：适用于已获取完整音频转录的情况，仅需生成对应结果。常见于无需检测说话结束的场景，例如处理预录制音频或按键通话应用中（用户结束说话的时机明确）
+2. [`StreamedAudioInput`][agents.voice.input.StreamedAudioInput]：适用于需要检测用户说话结束的场景。支持实时推送检测到的音频片段，语音管道会通过"活动检测"机制在适当时机自动运行智能体工作流
 
-## Results
+## 运行结果
 
-The result of a voice pipeline run is a [`StreamedAudioResult`][agents.voice.result.StreamedAudioResult]. This is an object that lets you stream events as they occur. There are a few kinds of [`VoiceStreamEvent`][agents.voice.events.VoiceStreamEvent], including:
+语音管道运行后返回 [`StreamedAudioResult`][agents.voice.result.StreamedAudioResult] 对象，可实时流式获取各类事件。主要包含以下几种 [`VoiceStreamEvent`][agents.voice.events.VoiceStreamEvent]：
 
-1. [`VoiceStreamEventAudio`][agents.voice.events.VoiceStreamEventAudio], which contains a chunk of audio.
-2. [`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle], which informs you of lifecycle events like a turn starting or ending.
-3. [`VoiceStreamEventError`][agents.voice.events.VoiceStreamEventError], is an error event.
+1. [`VoiceStreamEventAudio`][agents.voice.events.VoiceStreamEventAudio]：包含音频片段
+2. [`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle]：生命周期事件通知（如交互轮次开始/结束）
+3. [`VoiceStreamEventError`][agents.voice.events.VoiceStreamEventError]：错误事件
 
 ```python
 
@@ -68,8 +68,8 @@ async for event in result.stream():
     ...
 ```
 
-## Best practices
+## 最佳实践
 
-### Interruptions
+### 中断处理
 
-The Agents SDK currently does not support any built-in interruptions support for [`StreamedAudioInput`][agents.voice.input.StreamedAudioInput]. Instead for every detected turn it will trigger a separate run of your workflow. If you want to handle interruptions inside your application you can listen to the [`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle] events. `turn_started` will indicate that a new turn was transcribed and processing is beginning. `turn_ended` will trigger after all the audio was dispatched for a respective turn. You could use these events to mute the microphone of the speaker when the model starts a turn and unmute it after you flushed all the related audio for a turn.
+当前 Agents SDK 尚未为 [`StreamedAudioInput`][agents.voice.input.StreamedAudioInput] 提供内置中断支持。系统会为每个检测到的交互轮次触发独立的工作流运行。若需在应用中实现中断处理，可监听 [`VoiceStreamEventLifecycle`][agents.voice.events.VoiceStreamEventLifecycle] 事件：`turn_started` 表示新轮次转录开始并进入处理阶段，`turn_ended` 会在当前轮次所有音频分发完成后触发。您可利用这些事件在模型开始响应时静音麦克风，并在处理完当前轮次所有相关音频后恢复麦克风。

@@ -1,3 +1,3 @@
 # `Pipeline`
 
-::: agents.voice.pipeline
+::: 语音代理处理流程
