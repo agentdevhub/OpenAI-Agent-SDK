@@ -43,9 +43,9 @@ plugins:
   - i18n:
       docs_structure: folder
       languages:
-        - locale: zh_CN
+        - locale: en
           default: true
-          name: 简体中文
+          name: English
           build: true
           nav:
             - 介绍: index.md
