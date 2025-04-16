@@ -1,3 +1,3 @@
-# API 入门指南
+# `Processor interface`
 
-## 基础配置
+::: agents.tracing.processor_interface
