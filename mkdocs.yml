@@ -1,4 +1,9 @@
 site_name: OpenAI Agents SDK 中文文档
+site_description: 学习如何使用 OpenAI Agents SDK 构建、运行和管理强大的 AI 代理。提供快速入门、详细案例、API 文档和语音 Agent 指南。
+site_url: https://openai-agent-sdk.agentdevhub.com/
+site_author: 莫尔索
+repo_url: https://github.com/agentdevhub/OpenAI-Agent-SDK
+
 theme:
   name: material
   features:
@@ -40,86 +45,80 @@ plugins:
             heading_level: 3
             # Show inherited members
             inherited_members: true
-  - i18n:
-      docs_structure: folder
-      languages:
-        - locale: en
-          default: true
-          name: English
-          build: true
-          nav:
-            - 介绍: index.md
-            - 快速开始: quickstart.md
-            - 案例: examples.md
-            - 文档:
-                - agents.md
-                - running_agents.md
-                - results.md
-                - streaming.md
-                - tools.md
-                - mcp.md
-                - handoffs.md
-                - tracing.md
-                - context.md
-                - guardrails.md
-                - multi_agent.md
-                - models.md
-                - config.md
-                - visualization.md
-                - 语音 Agent:
-                    - voice/quickstart.md
-                    - voice/pipeline.md
-                    - voice/tracing.md
-            - API 索引:
-                - Agents:
-                    - ref/index.md
-                    - ref/agent.md
-                    - ref/run.md
-                    - ref/tool.md
-                    - ref/result.md
-                    - ref/stream_events.md
-                    - ref/handoffs.md
-                    - ref/lifecycle.md
-                    - ref/items.md
-                    - ref/run_context.md
-                    - ref/usage.md
-                    - ref/exceptions.md
-                    - ref/guardrail.md
-                    - ref/model_settings.md
-                    - ref/agent_output.md
-                    - ref/function_schema.md
-                    - ref/models/interface.md
-                    - ref/models/openai_chatcompletions.md
-                    - ref/models/openai_responses.md
-                    - ref/mcp/server.md
-                    - ref/mcp/util.md
-                - Tracing:
-                    - ref/tracing/index.md
-                    - ref/tracing/create.md
-                    - ref/tracing/traces.md
-                    - ref/tracing/spans.md
-                    - ref/tracing/processor_interface.md
-                    - ref/tracing/processors.md
-                    - ref/tracing/scope.md
-                    - ref/tracing/setup.md
-                    - ref/tracing/span_data.md
-                    - ref/tracing/util.md
-                - Voice:
-                    - ref/voice/pipeline.md
-                    - ref/voice/workflow.md
-                    - ref/voice/input.md
-                    - ref/voice/result.md
-                    - ref/voice/pipeline_config.md
-                    - ref/voice/events.md
-                    - ref/voice/exceptions.md
-                    - ref/voice/model.md
-                    - ref/voice/utils.md
-                    - ref/voice/models/openai_provider.md
-                    - ref/voice/models/openai_stt.md
-                    - ref/voice/models/openai_tts.md
-                - Extensions:
-                    - ref/extensions/handoff_filters.md
-                    - ref/extensions/handoff_prompt.md
+nav:
+  - 介绍: index.md
+  - 快速开始: quickstart.md
+  - 案例: examples.md
+  - 文档:
+      - agents.md
+      - running_agents.md
+      - results.md
+      - streaming.md
+      - tools.md
+      - mcp.md
+      - handoffs.md
+      - tracing.md
+      - context.md
+      - guardrails.md
+      - multi_agent.md
+      - models.md
+      - config.md
+      - visualization.md
+      - 语音 Agent:
+          - voice/quickstart.md
+          - voice/pipeline.md
+          - voice/tracing.md
+  - API 索引:
+      - Agents:
+          - ref/index.md
+          - ref/agent.md
+          - ref/run.md
+          - ref/tool.md
+          - ref/result.md
+          - ref/stream_events.md
+          - ref/handoffs.md
+          - ref/lifecycle.md
+          - ref/items.md
+          - ref/run_context.md
+          - ref/usage.md
+          - ref/exceptions.md
+          - ref/guardrail.md
+          - ref/model_settings.md
+          - ref/agent_output.md
+          - ref/function_schema.md
+          - ref/models/interface.md
+          - ref/models/openai_chatcompletions.md
+          - ref/models/openai_responses.md
+          - ref/mcp/server.md
+          - ref/mcp/util.md
+      - Tracing:
+          - ref/tracing/index.md
+          - ref/tracing/create.md
+          - ref/tracing/traces.md
+          - ref/tracing/spans.md
+          - ref/tracing/processor_interface.md
+          - ref/tracing/processors.md
+          - ref/tracing/scope.md
+          - ref/tracing/setup.md
+          - ref/tracing/span_data.md
+          - ref/tracing/util.md
+      - Voice:
+          - ref/voice/pipeline.md
+          - ref/voice/workflow.md
+          - ref/voice/input.md
+          - ref/voice/result.md
+          - ref/voice/pipeline_config.md
+          - ref/voice/events.md
+          - ref/voice/exceptions.md
+          - ref/voice/model.md
+          - ref/voice/utils.md
+          - ref/voice/models/openai_provider.md
+          - ref/voice/models/openai_stt.md
+          - ref/voice/models/openai_tts.md
+      - Extensions:
+          - ref/extensions/handoff_filters.md
+          - ref/extensions/handoff_prompt.md
+
 
 markdown_extensions:
   - pymdownx.superfences:

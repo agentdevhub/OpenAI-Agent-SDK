@@ -48,7 +48,7 @@ agent=Agent(
 
 ## 端到端示例
 
-完整示例请参阅[examples/mcp](https://github.com/openai/openai-agents-python/tree/main/examples/mcp)目录。
+完整示例请参阅[examples/mcp](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/mcp)目录。
 
 ## 追踪功能
 

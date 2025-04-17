@@ -66,11 +66,11 @@ english_agent = Agent(
 
 ## 使用其他大模型供应商
 
-可通过三种方式使用其他大模型供应商（示例参见[此处](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/)）：
+可通过三种方式使用其他大模型供应商（示例参见[此处](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/model_providers/)）：
 
-1. [`set_default_openai_client`][agents.set_default_openai_client] 适用于全局使用 `AsyncOpenAI` 实例作为大模型客户端的情况。当供应商提供与 OpenAI 兼容的 API 端点时，可通过该方法设置 `base_url` 和 `api_key`。可配置示例见 [examples/model_providers/custom_example_global.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_global.py)
-2. [`ModelProvider`][agents.models.interface.ModelProvider] 作用于 `Runner.run` 层级。该方法可实现"为本次运行中的所有智能体使用自定义模型供应商"。可配置示例见 [examples/model_providers/custom_example_provider.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_provider.py)
-3. [`Agent.model`][agents.agent.Agent.model] 可为特定智能体实例指定模型。该方法支持为不同智能体混用不同供应商。可配置示例见 [examples/model_providers/custom_example_agent.py](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/custom_example_agent.py)
+1. [`set_default_openai_client`][agents.set_default_openai_client] 适用于全局使用 `AsyncOpenAI` 实例作为大模型客户端的情况。当供应商提供与 OpenAI 兼容的 API 端点时，可通过该方法设置 `base_url` 和 `api_key`。可配置示例见 [examples/model_providers/custom_example_global.py](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/model_providers/custom_example_global.py)
+2. [`ModelProvider`][agents.models.interface.ModelProvider] 作用于 `Runner.run` 层级。该方法可实现"为本次运行中的所有智能体使用自定义模型供应商"。可配置示例见 [examples/model_providers/custom_example_provider.py](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/model_providers/custom_example_provider.py)
+3. [`Agent.model`][agents.agent.Agent.model] 可为特定智能体实例指定模型。该方法支持为不同智能体混用不同供应商。可配置示例见 [examples/model_providers/custom_example_agent.py](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/model_providers/custom_example_agent.py)
 
 若未持有 `platform.openai.com` 的 API 密钥，建议通过 `set_tracing_disabled()` 禁用追踪功能，或设置[其他追踪处理器](tracing.md)。
 
@@ -93,7 +93,7 @@ english_agent = Agent(
 SDK 默认使用 Responses API，但多数大模型供应商尚未支持该接口。您可能会遇到 404 等类似问题。解决方案如下：
 
 1. 调用 [`set_default_openai_api("chat_completions")`][agents.set_default_openai_api]。该方法适用于通过环境变量设置 `OPENAI_API_KEY` 和 `OPENAI_BASE_URL` 的情况
-2. 使用 [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel]。示例参见[此处](https://github.com/openai/openai-agents-python/tree/main/examples/model_providers/)
+2. 使用 [`OpenAIChatCompletionsModel`][agents.models.openai_chatcompletions.OpenAIChatCompletionsModel]。示例参见[此处](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/model_providers/)
 
 ### 结构化输出支持问题
 

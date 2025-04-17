@@ -191,4 +191,4 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-运行此示例时，智能体会与您对话！您可以在[examples/voice/static](https://github.com/openai/openai-agents-python/tree/main/examples/voice/static)查看交互式演示案例，亲自体验与智能体的语音对话。
+运行此示例时，智能体会与您对话！您可以在[examples/voice/static](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/voice/static)查看交互式演示案例，亲自体验与智能体的语音对话。

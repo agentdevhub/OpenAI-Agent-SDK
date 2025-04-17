@@ -48,7 +48,7 @@ If you want to invalidate the cache, you can call `invalidate_tools_cache()` on 
 
 ## End-to-end examples
 
-View complete working examples at [examples/mcp](https://github.com/openai/openai-agents-python/tree/main/examples/mcp).
+View complete working examples at [examples/mcp](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/mcp).
 
 ## Tracing
 

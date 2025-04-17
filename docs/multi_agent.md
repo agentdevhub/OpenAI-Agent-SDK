@@ -34,4 +34,4 @@
 - 实现评估循环：在`while`循环中，执行智能体与评估智能体持续交互，直到输出满足预设标准
 - 并行执行机制：通过`asyncio.gather`等Python原生方式并行运行多个智能体，适用于无依赖关系的批量任务加速
 
-更多示例请参见[`examples/agent_patterns`](https://github.com/openai/openai-agents-python/tree/main/examples/agent_patterns)代码库。
+更多示例请参见[`examples/agent_patterns`](https://github.com/agentdevhub/OpenAI-Agent-SDK/tree/main/examples/agent_patterns)代码库。
